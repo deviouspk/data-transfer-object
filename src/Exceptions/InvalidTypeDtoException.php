@@ -3,13 +3,13 @@
  * Created by PhpStorm.
  * User: tony
  * Date: 28.03.19
- * Time: 15:02
+ * Time: 15:02.
  */
 
 namespace Spatie\DataTransferObject\Exceptions;
 
-use Spatie\DataTransferObject\Contracts\PropertyContract;
 use TypeError;
+use Spatie\DataTransferObject\Contracts\PropertyContract;
 
 class InvalidTypeDtoException extends TypeError
 {
@@ -43,6 +43,4 @@ class InvalidTypeDtoException extends TypeError
     {
         return implode(', ', $property->getTypes());
     }
-
-
 }

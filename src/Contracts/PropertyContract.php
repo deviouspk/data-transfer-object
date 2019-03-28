@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: tony
  * Date: 28.03.19
- * Time: 15:12
+ * Time: 15:12.
  */
 
 namespace Spatie\DataTransferObject\Contracts;
-
 
 use ReflectionProperty;
 
