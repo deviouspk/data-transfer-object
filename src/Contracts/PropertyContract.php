@@ -35,4 +35,6 @@ interface PropertyContract
     public function immutable(): bool;
 
     public function setImmutable(bool $immutable): void;
+
+    public function isOptional(): bool;
 }

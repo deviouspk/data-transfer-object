@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Larapie\DataTransferObject\Tests\TestClasses;
 
 use Larapie\DataTransferObject\DataTransferObject;
-use Larapie\DataTransferObject\Contracts\Immutable;
+use Larapie\DataTransferObject\Contracts\immutable;
 
 class ImmutablePropertyDto extends DataTransferObject
 {
-    /** @var string|Immutable */
+
+    /** @var string|immutable */
     public $immutableProperty;
 
     /** @var string */

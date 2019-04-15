@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests\TestClasses;
 
+use Larapie\DataTransferObject\Contracts\optional;
 use Larapie\DataTransferObject\DataTransferObject;
 use Larapie\DataTransferObject\Traits\Immutable;
 
-class ImmutableNestedDto extends DataTransferObject
+class ImmutableOptionalDto extends DataTransferObject
 {
     use Immutable;
 
     /** @var string */
     public $name;
 
-    /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedChild[]|array $child */
-    public $children;
+    /** @var string|optional */
+    public $address;
 }

@@ -25,6 +25,9 @@ class Property implements PropertyContract
     protected $nullable = false;
 
     /** @var bool */
+    protected $optional = false;
+
+    /** @var bool */
     protected $initialised = false;
 
     /** @var bool */
@@ -59,7 +62,7 @@ class Property implements PropertyContract
     {
         $docComment = $this->reflection->getDocComment();
 
-        if (! $docComment) {
+        if (!$docComment) {
             $this->setNullable(true);
 
             return;
@@ -67,7 +70,7 @@ class Property implements PropertyContract
 
         preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
 
-        if (! count($matches)) {
+        if (!count($matches)) {
             $this->setNullable(true);
 
             return;
@@ -87,6 +90,16 @@ class Property implements PropertyContract
             }
         }
 
+        if (in_array('optional', $this->types) || in_array('Optional', $this->types)) {
+            $this->setOptional();
+            $this->setInitialized(false);
+            unset($this->types['optional'], $this->types['Optional']);
+
+            if (empty($this->types)) {
+                return;
+            }
+        }
+
         $this->hasTypeDeclaration = true;
 
         $this->setNullable(strpos($varDocComment, 'null') !== false);
@@ -94,7 +107,7 @@ class Property implements PropertyContract
 
     protected function isValidType($value): bool
     {
-        if (! $this->hasTypeDeclaration) {
+        if (!$this->hasTypeDeclaration) {
             return true;
         }
 
@@ -118,7 +131,7 @@ class Property implements PropertyContract
         $castTo = null;
 
         foreach ($this->types as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
+            if (!is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -127,7 +140,7 @@ class Property implements PropertyContract
             break;
         }
 
-        if (! $castTo) {
+        if (!$castTo) {
             return $value;
         }
 
@@ -139,7 +152,7 @@ class Property implements PropertyContract
         $castTo = null;
 
         foreach ($this->arrayTypes as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
+            if (!is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -148,7 +161,7 @@ class Property implements PropertyContract
             break;
         }
 
-        if (! $castTo) {
+        if (!$castTo) {
             return $values;
         }
 
@@ -172,7 +185,7 @@ class Property implements PropertyContract
                 return false;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 return false;
             }
         }
@@ -196,14 +209,14 @@ class Property implements PropertyContract
 
     protected function isValidGenericCollection(string $type, $collection): bool
     {
-        if (! is_array($collection)) {
+        if (!is_array($collection)) {
             return false;
         }
 
         $valueType = str_replace('[]', '', $type);
 
         foreach ($collection as $value) {
-            if (! $this->assertTypeEquals($valueType, $value)) {
+            if (!$this->assertTypeEquals($valueType, $value)) {
                 return false;
             }
         }
@@ -211,13 +224,13 @@ class Property implements PropertyContract
         return true;
     }
 
-    public function set($value) :void
+    public function set($value): void
     {
         if (is_array($value)) {
             $value = $this->shouldBeCastToCollection($value) ? $this->castCollection($value) : $this->cast($value);
         }
 
-        if (! $this->isValidType($value)) {
+        if (!$this->isValidType($value)) {
             throw new InvalidTypeDtoException($this, $value);
         }
 
@@ -226,12 +239,12 @@ class Property implements PropertyContract
         $this->value = $value;
     }
 
-    public function setInitialized(bool $bool):void
+    public function setInitialized(bool $bool): void
     {
         $this->initialised = $bool;
     }
 
-    public function isInitialized() :bool
+    public function isInitialized(): bool
     {
         return $this->initialised;
     }
@@ -288,7 +301,7 @@ class Property implements PropertyContract
 
     public function getValue()
     {
-        if (! $this->nullable() && $this->value == null) {
+        if (!$this->nullable() && $this->value == null) {
             return $this->getDefault();
         }
 
@@ -300,8 +313,23 @@ class Property implements PropertyContract
         return $this->reflection->getValue($object);
     }
 
-    public function getName() :string
+    public function getName(): string
     {
         return $this->reflection->getName();
+    }
+
+    public function isOptional(): bool
+    {
+        return $this->optional;
+    }
+
+    public function setOptional(): bool
+    {
+        return $this->optional = true;
+    }
+
+    public function setRequired(): bool
+    {
+        return $this->optional = false;
     }
 }

@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/data-transfer-object.svg?style=flat-square)](https://packagist.org/packages/spatie/data-transfer-object)
 [![Build Status](https://travis-ci.com/larapie/data-transfer-object.svg?branch=master)](https://travis-ci.com/larapie/data-transfer-object)
-[![Quality Score](https://img.shields.io/scrutinizer/g/spatie/data-transfer-object.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/data-transfer-object)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/larapie/data-transfer-object/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/larapie/data-transfer-object/?branch=master)
 [![StyleCI](https://github.styleci.io/repos/177636567/shield?branch=master)](https://github.styleci.io/repos/177636567)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/data-transfer-object.svg?style=flat-square)](https://packagist.org/packages/spatie/data-transfer-object)
 
@@ -159,6 +159,18 @@ class PostData extends DataTransferObject
 ```
 
 When PHP 7.4 introduces typed properties, you'll be able to simply remove the doc blocks and type the properties with the new, built-in syntax.
+
+### Optional Properties
+
+If you want to make certain attributes on the dto optional:
+
+```php
+class PostData extends DataTransferObject
+{
+    /** @var string|optional */
+    public $name;
+}
+```
 
 ### Working with collections
 
