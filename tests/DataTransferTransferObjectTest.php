@@ -394,6 +394,6 @@ class DataTransferObjectTest extends TestCase
 
         $dto->array[] = 'abc';
 
-        $this->assertEquals($dto->array,['abc']);
+        $this->assertEquals($dto->array, ['abc']);
     }
 }
