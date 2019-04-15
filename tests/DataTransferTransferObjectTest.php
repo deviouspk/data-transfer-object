@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests;
+namespace Larapie\DataTransferObject\Tests;
 
-use Spatie\DataTransferObject\DataTransferObject;
-use Spatie\DataTransferObject\Tests\TestClasses\DummyClass;
-use Spatie\DataTransferObject\Tests\TestClasses\EmptyChild;
-use Spatie\DataTransferObject\Tests\TestClasses\OtherClass;
-use Spatie\DataTransferObject\Tests\TestClasses\NestedChild;
-use Spatie\DataTransferObject\Tests\TestClasses\NestedParent;
-use Spatie\DataTransferObject\Exceptions\InvalidTypeDtoException;
-use Spatie\DataTransferObject\Tests\TestClasses\NestedParentOfMany;
-use Spatie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
-use Spatie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
-use Spatie\DataTransferObject\Exceptions\UninitialisedPropertyDtoException;
+use Larapie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\Tests\TestClasses\DummyClass;
+use Larapie\DataTransferObject\Tests\TestClasses\EmptyChild;
+use Larapie\DataTransferObject\Tests\TestClasses\OtherClass;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedChild;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
+use Larapie\DataTransferObject\Exceptions\InvalidTypeDtoException;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany;
+use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
+use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
+use Larapie\DataTransferObject\Exceptions\UninitialisedPropertyDtoException;
 
 class DataTransferObjectTest extends TestCase
 {
@@ -193,7 +193,7 @@ class DataTransferObjectTest extends TestCase
     public function classes_are_supported()
     {
         new class(['foo' => new DummyClass()]) extends DataTransferObject {
-            /** @var \Spatie\DataTransferObject\Tests\TestClasses\DummyClass */
+            /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass */
             public $foo;
         };
 
@@ -205,7 +205,7 @@ class DataTransferObjectTest extends TestCase
         },
         ]) extends DataTransferObject
         {
-            /** @var \Spatie\DataTransferObject\Tests\TestClasses\DummyClass */
+            /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass */
             public $foo;
         };
     }
@@ -214,7 +214,7 @@ class DataTransferObjectTest extends TestCase
     public function generic_collections_are_supported()
     {
         new class(['foo' => [new DummyClass()]]) extends DataTransferObject {
-            /** @var \Spatie\DataTransferObject\Tests\TestClasses\DummyClass[] */
+            /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass[] */
             public $foo;
         };
 
@@ -223,7 +223,7 @@ class DataTransferObjectTest extends TestCase
         $this->expectException(InvalidTypeDtoException::class);
 
         new class(['foo' => [new OtherClass()]]) extends DataTransferObject {
-            /** @var \Spatie\DataTransferObject\Tests\TestClasses\DummyClass[] */
+            /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass[] */
             public $foo;
         };
     }
@@ -305,7 +305,7 @@ class DataTransferObjectTest extends TestCase
         $this->assertEquals(['name' => 'child'], $object->toArray()['child']);
 
         $valueObject = new class(['childs' => [new NestedChild(['name' => 'child'])]]) extends DataTransferObject {
-            /** @var Spatie\DataTransferObject\Tests\TestClasses\NestedChild[] */
+            /** @var Larapie\DataTransferObject\Tests\TestClasses\NestedChild[] */
             public $childs;
         };
 
@@ -345,7 +345,7 @@ class DataTransferObjectTest extends TestCase
         ];
 
         $object = new class($data) extends DataTransferObject {
-            /** @var \Spatie\DataTransferObject\Tests\TestClasses\NestedParentOfMany[] */
+            /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany[] */
             public $children;
         };
 
@@ -366,7 +366,7 @@ class DataTransferObjectTest extends TestCase
     public function nested_array_dtos_can_be_nullable()
     {
         $object = new class(['children' => null]) extends DataTransferObject {
-            /** @var Spatie\DataTransferObject\Tests\TestClasses\NestedChild[]|null */
+            /** @var Larapie\DataTransferObject\Tests\TestClasses\NestedChild[]|null */
             public $children;
         };
 
@@ -377,10 +377,23 @@ class DataTransferObjectTest extends TestCase
     public function empty_dto_objects_can_be_cast_using_arrays()
     {
         $object = new class(['child' => []]) extends DataTransferObject {
-            /** @var \Spatie\DataTransferObject\Tests\TestClasses\EmptyChild */
+            /** @var \Larapie\DataTransferObject\Tests\TestClasses\EmptyChild */
             public $child;
         };
 
         $this->assertInstanceOf(EmptyChild::class, $object->child);
+    }
+
+    /** @test */
+    public function a_mutable_array_property_can_be_canged()
+    {
+        $dto = new class([]) extends DataTransferObject {
+            /** @var array */
+            public $array = [];
+        };
+
+        $dto->array[] = 'abc';
+
+        $this->assertEquals($dto->array,['abc']);
     }
 }

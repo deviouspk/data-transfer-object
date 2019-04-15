@@ -1,9 +1,9 @@
 <?php
 
-namespace Spatie\DataTransferObject\Exceptions;
+namespace Larapie\DataTransferObject\Exceptions;
 
 use TypeError;
-use Spatie\DataTransferObject\Contracts\PropertyContract;
+use Larapie\DataTransferObject\Contracts\PropertyContract;
 
 class UninitialisedPropertyDtoException extends TypeError
 {

@@ -1,13 +1,21 @@
 {
-    "name": "spatie/data-transfer-object",
+    "name": "larapie/data-transfer-object",
     "description": "Data transfer objects with batteries included",
     "keywords": [
         "spatie",
-        "data-transfer-object"
+        "larapie",
+        "data-transfer-object",
+        "php"
     ],
-    "homepage": "https://github.com/spatie/data-transfer-object",
+    "homepage": "https://github.com/larapie/data-transfer-object",
     "license": "MIT",
     "authors": [
+        {
+            "name": "Anthony Vancauwenberghe",
+            "email": "anthony.vanc@gmail.com",
+            "homepage": "https://github.com/larapie",
+            "role": "Developer"
+        },
         {
             "name": "Brent Roose",
             "email": "brent@spatie.be",
@@ -24,12 +32,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Spatie\\DataTransferObject\\": "src"
+            "Larapie\\DataTransferObject\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Spatie\\DataTransferObject\\Tests\\": "tests"
+            "Larapie\\DataTransferObject\\Tests\\": "tests"
         }
     },
     "scripts": {

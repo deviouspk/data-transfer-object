@@ -1,14 +1,14 @@
 <?php
 
-namespace Spatie\DataTransferObject\Tests;
+namespace Larapie\DataTransferObject\Tests;
 
-use Spatie\DataTransferObject\Tests\TestClasses\NestedChild;
-use Spatie\DataTransferObject\Tests\TestClasses\ImmutableDto;
-use Spatie\DataTransferObject\Exceptions\ImmutableDtoException;
-use Spatie\DataTransferObject\Tests\TestClasses\ImmutableNestedDto;
-use Spatie\DataTransferObject\Tests\TestClasses\ImmutablePropertyDto;
-use Spatie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
-use Spatie\DataTransferObject\Tests\TestClasses\TestDataTransferObject;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedChild;
+use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDto;
+use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
+use Larapie\DataTransferObject\Tests\TestClasses\ImmutableNestedDto;
+use Larapie\DataTransferObject\Tests\TestClasses\ImmutablePropertyDto;
+use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
+use Larapie\DataTransferObject\Tests\TestClasses\TestDataTransferObject;
 
 class ImmutableDataTransferObjectTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests\TestClasses;
+namespace Larapie\DataTransferObject\Tests\TestClasses;
 
 class DummyClass
 {

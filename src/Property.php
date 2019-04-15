@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject;
+namespace Larapie\DataTransferObject;
 
 use ReflectionProperty;
-use Spatie\DataTransferObject\Contracts\DtoContract;
-use Spatie\DataTransferObject\Contracts\PropertyContract;
-use Spatie\DataTransferObject\Exceptions\InvalidTypeDtoException;
+use Larapie\DataTransferObject\Contracts\DtoContract;
+use Larapie\DataTransferObject\Contracts\PropertyContract;
+use Larapie\DataTransferObject\Exceptions\InvalidTypeDtoException;
 
 class Property implements PropertyContract
 {
@@ -43,7 +43,7 @@ class Property implements PropertyContract
     protected $default;
 
     /** @var mixed */
-    protected $value;
+    public $value;
 
     /** @var ReflectionProperty */
     protected $reflection;

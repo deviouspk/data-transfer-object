@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DataTransferObject\Exceptions;
+namespace Larapie\DataTransferObject\Exceptions;
 
 use TypeError;
 

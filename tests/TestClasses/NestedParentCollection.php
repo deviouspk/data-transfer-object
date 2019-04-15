@@ -1,8 +1,8 @@
 <?php
 
-namespace Spatie\DataTransferObject\Tests\TestClasses;
+namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Spatie\DataTransferObject\DataTransferObjectCollection;
+use Larapie\DataTransferObject\DataTransferObjectCollection;
 
 class NestedParentCollection extends DataTransferObjectCollection
 {

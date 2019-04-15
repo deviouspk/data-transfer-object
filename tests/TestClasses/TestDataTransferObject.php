@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests\TestClasses;
+namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Spatie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\DataTransferObject;
 
 class TestDataTransferObject extends DataTransferObject
 {

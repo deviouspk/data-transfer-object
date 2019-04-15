@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests\TestClasses;
+namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Spatie\DataTransferObject\DataTransferObject;
-use Spatie\DataTransferObject\Contracts\Immutable;
+use Larapie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\Contracts\Immutable;
 
 class ImmutableDto extends DataTransferObject implements Immutable
 {

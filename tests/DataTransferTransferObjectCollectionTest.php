@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests;
+namespace Larapie\DataTransferObject\Tests;
 
-use Spatie\DataTransferObject\DataTransferObjectCollection;
-use Spatie\DataTransferObject\Tests\TestClasses\NestedParent;
-use Spatie\DataTransferObject\Tests\TestClasses\NestedChildCollection;
-use Spatie\DataTransferObject\Tests\TestClasses\NestedParentCollection;
-use Spatie\DataTransferObject\Tests\TestClasses\TestDataTransferObject;
+use Larapie\DataTransferObject\DataTransferObjectCollection;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedChildCollection;
+use Larapie\DataTransferObject\Tests\TestClasses\NestedParentCollection;
+use Larapie\DataTransferObject\Tests\TestClasses\TestDataTransferObject;
 
 class DataTransferObjectCollectionTest extends TestCase
 {

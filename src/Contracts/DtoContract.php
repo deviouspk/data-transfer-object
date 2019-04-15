@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\DataTransferObject\Contracts;
+namespace Larapie\DataTransferObject\Contracts;
 
 interface DtoContract
 {

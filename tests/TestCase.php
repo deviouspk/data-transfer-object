@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests;
+namespace Larapie\DataTransferObject\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 

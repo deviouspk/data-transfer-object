@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests\TestClasses;
+namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Spatie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\DataTransferObject;
 
 class NestedParentOfMany extends DataTransferObject
 {
-    /** @var \Spatie\DataTransferObject\Tests\TestClasses\NestedChild[] */
+    /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedChild[] */
     public $children;
 
     /** @var string */

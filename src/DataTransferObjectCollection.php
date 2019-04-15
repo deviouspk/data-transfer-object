@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject;
+namespace Larapie\DataTransferObject;
 
 use Iterator;
 use Countable;
 use ArrayAccess;
-use Spatie\DataTransferObject\Contracts\DtoContract;
+use Larapie\DataTransferObject\Contracts\DtoContract;
 
 abstract class DataTransferObjectCollection implements
     ArrayAccess,

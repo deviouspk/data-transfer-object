@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Spatie\DataTransferObject\Tests\TestClasses;
+namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Spatie\DataTransferObject\DataTransferObject;
-use Spatie\DataTransferObject\Contracts\Immutable;
+use Larapie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\Contracts\Immutable;
 
 class ImmutableNestedDto extends DataTransferObject implements Immutable
 {
     /** @var string */
     public $name;
 
-    /** @var \Spatie\DataTransferObject\Tests\TestClasses\NestedChild[]|array $child */
+    /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedChild[]|array $child */
     public $children;
 }
