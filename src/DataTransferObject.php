@@ -6,7 +6,6 @@ namespace Larapie\DataTransferObject;
 
 use ReflectionClass;
 use ReflectionProperty;
-use Larapie\DataTransferObject\Contracts\immutable;
 use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\Contracts\PropertyContract;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
@@ -69,12 +68,6 @@ abstract class DataTransferObject implements DtoContract
 
     protected function determineImmutability()
     {
-        if ($this instanceof immutable) {
-            $this->setImmutable();
-
-            return;
-        }
-
         /* If the dto itself is not immutable but some properties are chain them immutable  */
         foreach ($this->properties as $property) {
             if ($property->immutable()) {
@@ -83,9 +76,9 @@ abstract class DataTransferObject implements DtoContract
         }
     }
 
-    public function setImmutable(): void
+    protected function setImmutable(): void
     {
-        if (! $this->isImmutable()) {
+        if (!$this->isImmutable()) {
             $this->immutable = true;
             foreach ($this->properties as $property) {
                 $this->chainPropertyImmutable($property);
@@ -96,11 +89,11 @@ abstract class DataTransferObject implements DtoContract
     protected function chainPropertyImmutable(PropertyContract $property)
     {
         $dto = $property->getValue();
-        if ($dto instanceof DtoContract) {
+        if ($dto instanceof DataTransferObject) {
             $dto->setImmutable();
         } elseif (is_iterable($dto)) {
             foreach ($dto as $aPotentialDto) {
-                if ($aPotentialDto instanceof DtoContract) {
+                if ($aPotentialDto instanceof DataTransferObject) {
                     $aPotentialDto->setImmutable();
                 }
             }
@@ -131,10 +124,10 @@ abstract class DataTransferObject implements DtoContract
      */
     protected function validateProperty(PropertyContract $property, array $parameters): void
     {
-        if (! array_key_exists($property->getName(), $parameters)
+        if (!array_key_exists($property->getName(), $parameters)
             && is_null($property->getDefault())
-            && ! $property->nullable()
-            && ! $property->isOptional()
+            && !$property->nullable()
+            && !$property->isOptional()
         ) {
             throw new UninitialisedPropertyDtoException($property);
         }
@@ -197,7 +190,7 @@ abstract class DataTransferObject implements DtoContract
         if ($this->immutable) {
             throw new ImmutableDtoException($name);
         }
-        if (! isset($this->properties[$name])) {
+        if (!isset($this->properties[$name])) {
             throw new PropertyNotFoundDtoException($name, get_class($this));
         }
 
@@ -215,19 +208,6 @@ abstract class DataTransferObject implements DtoContract
     public function &__get($name)
     {
         return $this->properties[$name]->value;
-    }
-
-    /**
-     * @param array $data
-     * @return static
-     * @deprecated
-     */
-    public static function immutable(array $data): DtoContract
-    {
-        $dto = new static($data);
-        $dto->setImmutable();
-
-        return $dto;
     }
 
     public function isImmutable(): bool
@@ -271,10 +251,11 @@ abstract class DataTransferObject implements DtoContract
         $array = [];
 
         if (count($this->onlyKeys)) {
-            $array = array_intersect_key($data, array_flip((array) $this->onlyKeys));
+            $array = array_intersect_key($data, array_flip((array)$this->onlyKeys));
         } else {
             foreach ($data as $key => $propertyValue) {
                 if ($this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
+                    $array[$key] = $propertyValue;
                     $array[$key] = $propertyValue;
                 }
             }
@@ -295,7 +276,7 @@ abstract class DataTransferObject implements DtoContract
                 continue;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 continue;
             }
 
