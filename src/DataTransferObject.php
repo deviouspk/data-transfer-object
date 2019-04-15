@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
-use Larapie\DataTransferObject\Contracts\AdditionalProperties;
 use ReflectionClass;
 use ReflectionProperty;
 use Larapie\DataTransferObject\Contracts\immutable;
@@ -72,19 +71,21 @@ abstract class DataTransferObject implements DtoContract
     {
         if ($this instanceof immutable) {
             $this->setImmutable();
-            return ;
+
+            return;
         }
 
         /* If the dto itself is not immutable but some properties are chain them immutable  */
         foreach ($this->properties as $property) {
-            if ($property->immutable())
+            if ($property->immutable()) {
                 $this->chainPropertyImmutable($property);
+            }
         }
     }
 
     public function setImmutable(): void
     {
-        if (!$this->isImmutable()) {
+        if (! $this->isImmutable()) {
             $this->immutable = true;
             foreach ($this->properties as $property) {
                 $this->chainPropertyImmutable($property);
@@ -130,10 +131,10 @@ abstract class DataTransferObject implements DtoContract
      */
     protected function validateProperty(PropertyContract $property, array $parameters): void
     {
-        if (!array_key_exists($property->getName(), $parameters)
+        if (! array_key_exists($property->getName(), $parameters)
             && is_null($property->getDefault())
-            && !$property->nullable()
-            && !$property->isOptional()
+            && ! $property->nullable()
+            && ! $property->isOptional()
         ) {
             throw new UninitialisedPropertyDtoException($property);
         }
@@ -196,7 +197,7 @@ abstract class DataTransferObject implements DtoContract
         if ($this->immutable) {
             throw new ImmutableDtoException($name);
         }
-        if (!isset($this->properties[$name])) {
+        if (! isset($this->properties[$name])) {
             throw new PropertyNotFoundDtoException($name, get_class($this));
         }
 
@@ -270,7 +271,7 @@ abstract class DataTransferObject implements DtoContract
         $array = [];
 
         if (count($this->onlyKeys)) {
-            $array = array_intersect_key($data, array_flip((array)$this->onlyKeys));
+            $array = array_intersect_key($data, array_flip((array) $this->onlyKeys));
         } else {
             foreach ($data as $key => $propertyValue) {
                 if ($this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
@@ -294,7 +295,7 @@ abstract class DataTransferObject implements DtoContract
                 continue;
             }
 
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 continue;
             }
 
