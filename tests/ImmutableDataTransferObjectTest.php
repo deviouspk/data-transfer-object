@@ -2,6 +2,7 @@
 
 namespace Larapie\DataTransferObject\Tests;
 
+use Larapie\DataTransferObject\Traits\Immutable;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedChild;
 use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDto;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
@@ -9,17 +10,13 @@ use Larapie\DataTransferObject\Tests\TestClasses\ImmutableNestedDto;
 use Larapie\DataTransferObject\Tests\TestClasses\ImmutablePropertyDto;
 use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
 use Larapie\DataTransferObject\Tests\TestClasses\TestDataTransferObject;
-use Larapie\DataTransferObject\Traits\Immutable;
 
 class ImmutableDataTransferObjectTest extends TestCase
 {
     /** @test */
     public function immutable_values_cannot_be_overwritten()
     {
-        $dto = new class([
-            'testProperty' => 1,
-        ]) extends TestDataTransferObject
-        {
+        $dto = new class(['testProperty' => 1]) extends TestDataTransferObject {
             use Immutable;
         };
 
