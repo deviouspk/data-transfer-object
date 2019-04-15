@@ -9,7 +9,6 @@ use Larapie\DataTransferObject\Contracts\immutable;
 
 class ImmutablePropertyDto extends DataTransferObject
 {
-
     /** @var string|immutable */
     public $immutableProperty;
 

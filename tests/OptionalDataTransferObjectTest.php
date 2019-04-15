@@ -6,7 +6,6 @@ use Larapie\DataTransferObject\Tests\TestClasses\ImmutableOptionalDto;
 
 class OptionalDataTransferObjectTest extends TestCase
 {
-
     /** @test */
     public function optional_values_are_not_required()
     {
@@ -22,7 +21,7 @@ class OptionalDataTransferObjectTest extends TestCase
     {
         $dto = new ImmutableOptionalDto([
             'name' => 'test',
-            'address' => '1st street'
+            'address' => '1st street',
         ]);
         $data = $dto->toArray();
         $this->assertArrayHasKey('address', $data);
