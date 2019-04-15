@@ -2,6 +2,10 @@
 
 All notable changes to `data-transfer-object` will be documented in this file
 
+## 2.0.0" - 2019-04-15
+
+- Optional properties support + major immutability improvements
+
 ## 1.8.0 - 2019-03-18
 
 - Support immutability
