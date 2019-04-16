@@ -9,6 +9,6 @@ class UninitialisedPropertyDtoException extends TypeError
 {
     public function __construct(PropertyContract $property)
     {
-        parent::__construct("Non-nullable property {$property->getFqn()} has not been initialized.");
+        parent::__construct("Parameter {$property->getName()} is required and cannot be null.");
     }
 }
