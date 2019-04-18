@@ -283,7 +283,6 @@ abstract class DataTransferObject implements DtoContract
             foreach ($data as $key => $propertyValue) {
                 if ($this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
                     $array[$key] = $propertyValue;
-                    $array[$key] = $propertyValue;
                 }
             }
         }

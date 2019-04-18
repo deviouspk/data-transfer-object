@@ -43,6 +43,6 @@ class AnnotationsDataTransferObjectTest extends TestCase
     {
         $dto = new OptionalPropertyDto([
         ]);
-        $this->assertTrue(true);
+        $this->assertEmpty($dto->toArray());
     }
 }
