@@ -2,8 +2,8 @@
 
 namespace Larapie\DataTransferObject\Tests;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Larapie\DataTransferObject\Property;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Larapie\DataTransferObject\Tests\TestClasses\OptionalPropertyDto;
 
 class AnnotationsDataTransferObjectTest extends TestCase
@@ -14,7 +14,7 @@ class AnnotationsDataTransferObjectTest extends TestCase
         $start_time = microtime(true);
         for ($i = 0; $i < 100; $i++) {
             $dto = new OptionalPropertyDto([
-                "name" => "test"
+                'name' => 'test',
             ]);
             $dto->toArray();
         }
@@ -27,7 +27,7 @@ class AnnotationsDataTransferObjectTest extends TestCase
         $start_time = microtime(true);
         for ($i = 0; $i < 100; $i++) {
             $dto = new OptionalPropertyDto([
-                "name" => "test"
+                'name' => 'test',
             ]);
             $dto->toArray();
         }
