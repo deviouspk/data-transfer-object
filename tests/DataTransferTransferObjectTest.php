@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests;
 
+use Larapie\DataTransferObject\Traits\Immutable;
 use Larapie\DataTransferObject\DataTransferObject;
-use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
-use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
-use Larapie\DataTransferObject\Exceptions\PropertyAlreadyExistsException;
 use Larapie\DataTransferObject\Tests\TestClasses\DummyClass;
 use Larapie\DataTransferObject\Tests\TestClasses\EmptyChild;
 use Larapie\DataTransferObject\Tests\TestClasses\OtherClass;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedChild;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
+use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
 use Larapie\DataTransferObject\Exceptions\InvalidTypeDtoException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany;
 use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
+use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
 use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
+use Larapie\DataTransferObject\Exceptions\PropertyAlreadyExistsException;
 use Larapie\DataTransferObject\Exceptions\UninitialisedPropertyDtoException;
-use Larapie\DataTransferObject\Traits\Immutable;
 
 class DataTransferObjectTest extends TestCase
 {
     /** @test */
     public function only_the_type_hinted_type_may_be_passed()
     {
-        new class(['foo' => 'value']) extends DataTransferObject
-        {
+        new class(['foo' => 'value']) extends DataTransferObject {
             /** @var string */
             public $foo;
         };
@@ -35,8 +34,7 @@ class DataTransferObjectTest extends TestCase
 
         $this->expectException(InvalidTypeDtoException::class);
 
-        new class(['foo' => false]) extends DataTransferObject
-        {
+        new class(['foo' => false]) extends DataTransferObject {
             /** @var string */
             public $foo;
         };
@@ -45,14 +43,12 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function union_types_are_supported()
     {
-        new class(['foo' => 'value']) extends DataTransferObject
-        {
+        new class(['foo' => 'value']) extends DataTransferObject {
             /** @var string|bool */
             public $foo;
         };
 
-        new class(['foo' => false]) extends DataTransferObject
-        {
+        new class(['foo' => false]) extends DataTransferObject {
             /** @var string|bool */
             public $foo;
         };
@@ -63,8 +59,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function nullable_types_are_supported()
     {
-        new class(['foo' => null]) extends DataTransferObject
-        {
+        new class(['foo' => null]) extends DataTransferObject {
             /** @var string|null */
             public $foo;
         };
@@ -75,8 +70,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function default_values_are_supported()
     {
-        $valueObject = new class(['bar' => true]) extends DataTransferObject
-        {
+        $valueObject = new class(['bar' => true]) extends DataTransferObject {
             /** @var string */
             public $foo = 'abc';
 
@@ -92,8 +86,7 @@ class DataTransferObjectTest extends TestCase
     {
         $this->expectException(InvalidTypeDtoException::class);
 
-        new class(['foo' => null]) extends DataTransferObject
-        {
+        new class(['foo' => null]) extends DataTransferObject {
             /** @var string */
             public $foo;
         };
@@ -102,8 +95,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function setting_unknown_property_throws_error()
     {
-        $dto = new class([]) extends DataTransferObject
-        {
+        $dto = new class([]) extends DataTransferObject {
         };
 
         $this->expectException(PropertyNotFoundDtoException::class);
@@ -116,8 +108,7 @@ class DataTransferObjectTest extends TestCase
     {
         $this->expectException(UnknownPropertiesDtoException::class);
 
-        new class(['bar' => null]) extends DataTransferObject
-        {
+        new class(['bar' => null]) extends DataTransferObject {
         };
     }
 
@@ -125,8 +116,7 @@ class DataTransferObjectTest extends TestCase
     public function unknown_properties_show_a_comprehensive_error_message()
     {
         try {
-            new class(['foo' => null, 'bar' => null]) extends DataTransferObject
-            {
+            new class(['foo' => null, 'bar' => null]) extends DataTransferObject {
             };
         } catch (UnknownPropertiesDtoException $error) {
             $this->assertContains('foo', $error->getMessage());
@@ -137,8 +127,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function only_returns_filtered_properties()
     {
-        $valueObject = new class(['foo' => 1, 'bar' => 2]) extends DataTransferObject
-        {
+        $valueObject = new class(['foo' => 1, 'bar' => 2]) extends DataTransferObject {
             /** @var int */
             public $foo;
 
@@ -152,8 +141,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function except_returns_filtered_properties()
     {
-        $valueObject = new class(['foo' => 1, 'bar' => 2]) extends DataTransferObject
-        {
+        $valueObject = new class(['foo' => 1, 'bar' => 2]) extends DataTransferObject {
             /** @var int */
             public $foo;
 
@@ -167,8 +155,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function all_returns_all_properties()
     {
-        $valueObject = new class(['foo' => 1, 'bar' => 2]) extends DataTransferObject
-        {
+        $valueObject = new class(['foo' => 1, 'bar' => 2]) extends DataTransferObject {
             /** @var int */
             public $foo;
 
@@ -182,14 +169,12 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function mixed_is_supported()
     {
-        new class(['foo' => 'abc']) extends DataTransferObject
-        {
+        new class(['foo' => 'abc']) extends DataTransferObject {
             /** @var mixed */
             public $foo;
         };
 
-        new class(['foo' => 1]) extends DataTransferObject
-        {
+        new class(['foo' => 1]) extends DataTransferObject {
             /** @var mixed */
             public $foo;
         };
@@ -200,8 +185,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function float_is_supported()
     {
-        new class(['foo' => 5.1]) extends DataTransferObject
-        {
+        new class(['foo' => 5.1]) extends DataTransferObject {
             /** @var float */
             public $foo;
         };
@@ -212,8 +196,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function classes_are_supported()
     {
-        new class(['foo' => new DummyClass()]) extends DataTransferObject
-        {
+        new class(['foo' => new DummyClass()]) extends DataTransferObject {
             /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass */
             public $foo;
         };
@@ -222,8 +205,7 @@ class DataTransferObjectTest extends TestCase
 
         $this->expectException(InvalidTypeDtoException::class);
 
-        new class(['foo' => new class()
-        {
+        new class(['foo' => new class() {
         },
         ]) extends DataTransferObject
         {
@@ -235,8 +217,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function generic_collections_are_supported()
     {
-        new class(['foo' => [new DummyClass()]]) extends DataTransferObject
-        {
+        new class(['foo' => [new DummyClass()]]) extends DataTransferObject {
             /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass[] */
             public $foo;
         };
@@ -245,8 +226,7 @@ class DataTransferObjectTest extends TestCase
 
         $this->expectException(InvalidTypeDtoException::class);
 
-        new class(['foo' => [new OtherClass()]]) extends DataTransferObject
-        {
+        new class(['foo' => [new OtherClass()]]) extends DataTransferObject {
             /** @var \Larapie\DataTransferObject\Tests\TestClasses\DummyClass[] */
             public $foo;
         };
@@ -257,8 +237,7 @@ class DataTransferObjectTest extends TestCase
     {
         $this->expectException(InvalidTypeDtoException::class);
 
-        new class(['foo' => [null]]) extends DataTransferObject
-        {
+        new class(['foo' => [null]]) extends DataTransferObject {
             /** @var string[] */
             public $foo;
         };
@@ -269,8 +248,7 @@ class DataTransferObjectTest extends TestCase
     {
         $this->expectException(UninitialisedPropertyDtoException::class);
 
-        new class([]) extends DataTransferObject
-        {
+        new class([]) extends DataTransferObject {
             /** @var string */
             public $foo;
         };
@@ -279,24 +257,20 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function empty_type_declaration_allows_everything()
     {
-        new class(['foo' => new DummyClass()]) extends DataTransferObject
-        {
+        new class(['foo' => new DummyClass()]) extends DataTransferObject {
             public $foo;
         };
 
-        new class(['foo' => null]) extends DataTransferObject
-        {
+        new class(['foo' => null]) extends DataTransferObject {
             public $foo;
         };
 
-        new class(['foo' => null]) extends DataTransferObject
-        {
+        new class(['foo' => null]) extends DataTransferObject {
             /** This is a variable without type declaration */
             public $foo;
         };
 
-        new class(['foo' => 1]) extends DataTransferObject
-        {
+        new class(['foo' => 1]) extends DataTransferObject {
             public $foo;
         };
 
@@ -334,8 +308,7 @@ class DataTransferObjectTest extends TestCase
 
         $this->assertEquals(['name' => 'child'], $object->toArray()['child']);
 
-        $valueObject = new class(['childs' => [new NestedChild(['name' => 'child'])]]) extends DataTransferObject
-        {
+        $valueObject = new class(['childs' => [new NestedChild(['name' => 'child'])]]) extends DataTransferObject {
             /** @var Larapie\DataTransferObject\Tests\TestClasses\NestedChild[] */
             public $childs;
         };
@@ -375,8 +348,7 @@ class DataTransferObjectTest extends TestCase
             ],
         ];
 
-        $object = new class($data) extends DataTransferObject
-        {
+        $object = new class($data) extends DataTransferObject {
             /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany[] */
             public $children;
         };
@@ -388,32 +360,30 @@ class DataTransferObjectTest extends TestCase
     public function dto_attribute_is_overrided_by_with_parameter()
     {
         $data = [
-            'name' => 'test'
+            'name' => 'test',
         ];
 
-        $object = new class($data) extends DataTransferObject
-        {
+        $object = new class($data) extends DataTransferObject {
             /** @var string $name */
             public $name;
         };
 
         $this->assertEquals(['name' => 'test'], $object->toArray());
 
-        $object->override('name','test2');
+        $object->override('name', 'test2');
         $this->assertEquals(['name' => 'test2'], $object->toArray());
 
         $this->expectException(PropertyAlreadyExistsException::class);
-        $object->with('name','test2');
+        $object->with('name', 'test2');
     }
 
     /** @test */
     public function immutable_dto_attribute_overriding_throws_exception()
     {
         $data = [
-            'name' => 'test'
+            'name' => 'test',
         ];
-        $object = new class($data) extends DataTransferObject
-        {
+        $object = new class($data) extends DataTransferObject {
             /** @var string|immutable $name */
             public $name;
         };
@@ -421,17 +391,16 @@ class DataTransferObjectTest extends TestCase
         $this->assertEquals(['name' => 'test'], $object->toArray());
 
         $this->expectException(ImmutablePropertyDtoException::class);
-        $object->override('name','test2');
+        $object->override('name', 'test2');
     }
 
     /** @test */
     public function immutable_dto_overriding_throws_exception()
     {
         $data = [
-            'name' => 'test'
+            'name' => 'test',
         ];
-        $object = new class($data) extends DataTransferObject
-        {
+        $object = new class($data) extends DataTransferObject {
             use Immutable;
 
             /** @var string|immutable $name */
@@ -441,7 +410,7 @@ class DataTransferObjectTest extends TestCase
         $this->assertEquals(['name' => 'test'], $object->toArray());
 
         $this->expectException(ImmutableDtoException::class);
-        $object->override('name','test2');
+        $object->override('name', 'test2');
     }
 
     /** @test */
@@ -457,8 +426,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function nested_array_dtos_can_be_nullable()
     {
-        $object = new class(['children' => null]) extends DataTransferObject
-        {
+        $object = new class(['children' => null]) extends DataTransferObject {
             /** @var Larapie\DataTransferObject\Tests\TestClasses\NestedChild[]|null */
             public $children;
         };
@@ -469,8 +437,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function empty_dto_objects_can_be_cast_using_arrays()
     {
-        $object = new class(['child' => []]) extends DataTransferObject
-        {
+        $object = new class(['child' => []]) extends DataTransferObject {
             /** @var \Larapie\DataTransferObject\Tests\TestClasses\EmptyChild */
             public $child;
         };
@@ -481,8 +448,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function a_mutable_array_property_can_be_canged()
     {
-        $dto = new class([]) extends DataTransferObject
-        {
+        $dto = new class([]) extends DataTransferObject {
             /** @var array */
             public $array = [];
         };
