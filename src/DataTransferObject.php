@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
+use Larapie\DataTransferObject\Exceptions\PropertyAlreadyExistsException;
 use ReflectionClass;
 use ReflectionProperty;
 use Larapie\DataTransferObject\Contracts\DtoContract;
@@ -21,6 +22,9 @@ abstract class DataTransferObject implements DtoContract
 {
     /** @var array */
     protected $onlyKeys = [];
+
+    /** @var array */
+    protected $with = [];
 
     /** @var Property[] | array */
     protected $properties = [];
@@ -78,7 +82,7 @@ abstract class DataTransferObject implements DtoContract
 
     protected function setImmutable(): void
     {
-        if (! $this->isImmutable()) {
+        if (!$this->isImmutable()) {
             $this->immutable = true;
             foreach ($this->properties as $property) {
                 $this->chainPropertyImmutable($property);
@@ -124,10 +128,10 @@ abstract class DataTransferObject implements DtoContract
      */
     protected function validateProperty(PropertyContract $property, array $parameters): void
     {
-        if (! array_key_exists($property->getName(), $parameters)
+        if (!array_key_exists($property->getName(), $parameters)
             && is_null($property->getDefault())
-            && ! $property->nullable()
-            && ! $property->isOptional()
+            && !$property->nullable()
+            && !$property->isOptional()
         ) {
             throw new UninitialisedPropertyDtoException($property);
         }
@@ -190,7 +194,7 @@ abstract class DataTransferObject implements DtoContract
         if ($this->immutable) {
             throw new ImmutableDtoException($name);
         }
-        if (! isset($this->properties[$name])) {
+        if (!isset($this->properties[$name])) {
             throw new PropertyNotFoundDtoException($name, get_class($this));
         }
 
@@ -245,13 +249,34 @@ abstract class DataTransferObject implements DtoContract
         return $this;
     }
 
+    public function with(string $key, $value): DtoContract
+    {
+        if (array_key_exists($key, $this->getPublicProperties())) {
+            throw new PropertyAlreadyExistsException($key);
+        }
+        return $this->override($key, $value);
+    }
+
+    public function override(string $key, $value): DtoContract
+    {
+        if ($this->isImmutable())
+            throw new ImmutableDtoException($key);
+
+        if ((array_key_exists($key, $this->properties) && $this->properties[$key]->immutable())) {
+            throw new ImmutablePropertyDtoException($key);
+        }
+
+        $this->with[$key] = $value;
+        return $this;
+    }
+
     public function toArray(): array
     {
         $data = $this->all();
         $array = [];
 
         if (count($this->onlyKeys)) {
-            $array = array_intersect_key($data, array_flip((array) $this->onlyKeys));
+            $array = array_intersect_key($data, array_flip((array)$this->onlyKeys));
         } else {
             foreach ($data as $key => $propertyValue) {
                 if ($this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
@@ -261,7 +286,7 @@ abstract class DataTransferObject implements DtoContract
             }
         }
 
-        return $this->parseArray($array);
+        return $this->parseArray(array_merge($array, $this->with));
     }
 
     protected function parseArray(array $array): array
@@ -276,7 +301,7 @@ abstract class DataTransferObject implements DtoContract
                 continue;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 continue;
             }
 

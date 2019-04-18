@@ -8,11 +8,11 @@ class UnknownPropertiesDtoException extends TypeError
 {
     public function __construct(array $properties, string $className)
     {
-        $propertyNames = implode('`, `', $properties);
+        $propertyNames = implode(', ', $properties);
         if (count($properties) > 1)
-            $message = "Parameters`{$propertyNames}` are not allowed as input on {$className}";
+            $message = "Parameters {$propertyNames} are not allowed as input on {$className}";
         else
-            $message = "Parameter`{$propertyNames}` is not allowed as input on {$className}";
+            $message = "Parameter {$propertyNames} is not allowed as input on {$className}";
         parent::__construct($message);
     }
 }

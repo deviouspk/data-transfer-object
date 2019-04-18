@@ -172,6 +172,38 @@ class PostData extends DataTransferObject
 }
 ```
 
+### Overriding & Adding Properties
+
+If you want to add or override a certain value on the dto you can do it as follows:
+
+Adding Data:
+```php
+    public function create(PostData $data, User $user)
+    {
+        $data->with('user_id', $user->id);
+        return $this->repository->create($data->toArray());
+    }
+```
+
+Overriding Property:
+
+```php
+    public function create(PostData $data, User $user)
+    {
+        if($this->user->isAdmin()){
+            $data->override('name', 'admin');
+        }
+        $data->with('user_id', $user->id);
+        return $this->repository->create($data->toArray());
+    }
+```
+
+##### Notes:
+- You cannot add or override data on an immutable dto. You also can't override immutable properties.
+
+- You cannot use the with method to add properties that are declared as public properties on the dto.
+
+
 ### Working with collections
 
 If you're working with collections of DTOs, you probably want auto completion and proper type validation on your collections too.
