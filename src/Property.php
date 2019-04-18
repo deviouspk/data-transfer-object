@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
-use Doctrine\Common\Annotations\AnnotationException;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Annotations\FileCacheReader;
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\FilesystemCache;
-use Doctrine\Common\Cache\PhpFileCache;
-use Larapie\DataTransferObject\Annotations\Immutable;
-use Larapie\DataTransferObject\Annotations\Optional;
-use phpDocumentor\Reflection\Types\Self_;
 use ReflectionProperty;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Larapie\DataTransferObject\Annotations\Optional;
+use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\Contracts\PropertyContract;
 use Larapie\DataTransferObject\Exceptions\InvalidTypeDtoException;
@@ -79,7 +73,7 @@ class Property implements PropertyContract
     {
         $docComment = $this->reflection->getDocComment();
 
-        if (!$docComment) {
+        if (! $docComment) {
             $this->setNullable(true);
 
             return;
@@ -87,7 +81,7 @@ class Property implements PropertyContract
 
         preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
 
-        if (!count($matches)) {
+        if (! count($matches)) {
             $this->setNullable(true);
 
             return;
@@ -106,7 +100,7 @@ class Property implements PropertyContract
 
     protected function isValidType($value): bool
     {
-        if (!$this->hasTypeDeclaration) {
+        if (! $this->hasTypeDeclaration) {
             return true;
         }
 
@@ -130,7 +124,7 @@ class Property implements PropertyContract
         $castTo = null;
 
         foreach ($this->types as $type) {
-            if (!is_subclass_of($type, DtoContract::class)) {
+            if (! is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -139,7 +133,7 @@ class Property implements PropertyContract
             break;
         }
 
-        if (!$castTo) {
+        if (! $castTo) {
             return $value;
         }
 
@@ -151,7 +145,7 @@ class Property implements PropertyContract
         $castTo = null;
 
         foreach ($this->arrayTypes as $type) {
-            if (!is_subclass_of($type, DtoContract::class)) {
+            if (! is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -160,7 +154,7 @@ class Property implements PropertyContract
             break;
         }
 
-        if (!$castTo) {
+        if (! $castTo) {
             return $values;
         }
 
@@ -184,7 +178,7 @@ class Property implements PropertyContract
                 return false;
             }
 
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 return false;
             }
         }
@@ -208,14 +202,14 @@ class Property implements PropertyContract
 
     protected function isValidGenericCollection(string $type, $collection): bool
     {
-        if (!is_array($collection)) {
+        if (! is_array($collection)) {
             return false;
         }
 
         $valueType = str_replace('[]', '', $type);
 
         foreach ($collection as $value) {
-            if (!$this->assertTypeEquals($valueType, $value)) {
+            if (! $this->assertTypeEquals($valueType, $value)) {
                 return false;
             }
         }
@@ -229,7 +223,7 @@ class Property implements PropertyContract
             $value = $this->shouldBeCastToCollection($value) ? $this->castCollection($value) : $this->cast($value);
         }
 
-        if (!$this->isValidType($value)) {
+        if (! $this->isValidType($value)) {
             throw new InvalidTypeDtoException($this, $value);
         }
 
@@ -270,8 +264,10 @@ class Property implements PropertyContract
 
     public function immutable(): bool
     {
-        if (!isset($this->immutable))
+        if (! isset($this->immutable)) {
             $this->immutable = $this->getAnnotation(Immutable::class) !== null;
+        }
+
         return $this->immutable;
     }
 
@@ -302,7 +298,7 @@ class Property implements PropertyContract
 
     public function getValue()
     {
-        if (!$this->nullable() && $this->value == null) {
+        if (! $this->nullable() && $this->value == null) {
             return $this->getDefault();
         }
 
@@ -321,8 +317,10 @@ class Property implements PropertyContract
 
     public function isOptional(): bool
     {
-        if (!isset($this->optional))
+        if (! isset($this->optional)) {
             $this->optional = $this->getAnnotation(Optional::class) !== null;
+        }
+
         return $this->optional;
     }
 
@@ -336,9 +334,12 @@ class Property implements PropertyContract
         return $this->optional = false;
     }
 
-    protected function getReader() :Reader{
-        if(self::$reader === null)
+    protected function getReader() :Reader
+    {
+        if (self::$reader === null) {
             self::setReader(new CachedReader(new AnnotationReader(), new ArrayCache()));
+        }
+
         return self::$reader;
     }
 
@@ -351,8 +352,8 @@ class Property implements PropertyContract
     protected function setAnnotations()
     {
         $annotations = [];
-        foreach(self::getReader()->getPropertyAnnotations($this->reflection) as $annotation){
-            $annotations[get_class($annotation)]=$annotation;
+        foreach (self::getReader()->getPropertyAnnotations($this->reflection) as $annotation) {
+            $annotations[get_class($annotation)] = $annotation;
         }
         $this->annotations = $annotations;
     }
