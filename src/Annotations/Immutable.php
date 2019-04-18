@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Annotations;
 
 /**
@@ -9,5 +8,4 @@ namespace Larapie\DataTransferObject\Annotations;
  */
 final class Immutable
 {
-
 }
