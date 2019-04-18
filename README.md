@@ -6,6 +6,9 @@
 [![StyleCI](https://github.styleci.io/repos/177636567/shield?branch=master)](https://github.styleci.io/repos/177636567)
 [![Total Downloads](https://poser.pugx.org/larapie/data-transfer-object/downloads)](https://packagist.org/packages/larapie/data-transfer-object)
 
+## Note
+The base repo is originally developed and maintained by spatie (https://github.com/spatie/data-transfer-object). Our goal is to improve this this package with additional features.
+
 ## Installation
 
 You can install the package via composer:
