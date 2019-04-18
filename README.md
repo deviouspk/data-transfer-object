@@ -167,7 +167,10 @@ If you want to make certain attributes on the dto optional:
 ```php
 class PostData extends DataTransferObject
 {
-    /** @var string|optional */
+    /**
+     * @Optional
+     * @var string $name
+     */
     public $name;
 }
 ```
@@ -305,37 +308,33 @@ $postData = new PostData([
 
 ### Immutability
 
-If you want your data object to be never changeable (this is a good idea in some cases), you can make them immutable:
+If you want your data object to be never changeable (this is a good idea in some cases), you can make it immutable:
 
 ```php
-$postData = new PostData::immutable([
-    'name' => 'foo'
-]);
-$postData->setImmutable();
-```
-
-OR
-
-```php
-class PostData extends DataTransferObject implements Immutable
+class PostData extends DataTransferObject
 {
+    use MakeImmutable;
+    
     /** @var string */
     public $name;
 }
 ```
 
 
-If you only want to make certain properties immutable you can typehint this on the variable
+If you only want to make a certain property immutable you can annotate this on the variable.
 
 ```php
 class PostData extends DataTransferObject
 {
-    /** @var string|immutable */
+    /**
+     * @Immutable
+     * @var string $name
+     */
     public $name;
 }
 ```
 
-Trying to change a property of `$postData` after it's constructed, will result in a `DataTransferObjectError`.
+Trying to change a property of `$postData` after it's constructed, will result in a `ImmutableDtoException`.
 
 ### Helper functions
 

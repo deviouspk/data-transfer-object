@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Larapie\DataTransferObject\Traits\MakeImmutable;
+use Larapie\DataTransferObject\Annotations\Optional;
 use Larapie\DataTransferObject\DataTransferObject;
 
-class ImmutableDto extends DataTransferObject
+class OptionalPropertyDto extends DataTransferObject
 {
-    use MakeImmutable;
-
-    /** @var string */
+    /**
+     * @Optional
+     * @var string $name
+     */
     public $name;
 }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests\TestClasses;
 
-use Larapie\DataTransferObject\Traits\Immutable;
+use Larapie\DataTransferObject\Traits\MakeImmutable;
 use Larapie\DataTransferObject\DataTransferObject;
 
 class ImmutableNestedDto extends DataTransferObject
 {
-    use Immutable;
+    use MakeImmutable;
 
     /** @var string */
     public $name;

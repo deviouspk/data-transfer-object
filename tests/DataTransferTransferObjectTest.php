@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests;
 
+use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\DataTransferObject;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
 use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
@@ -18,7 +19,7 @@ use Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany;
 use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
 use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
 use Larapie\DataTransferObject\Exceptions\UninitialisedPropertyDtoException;
-use Larapie\DataTransferObject\Traits\Immutable;
+use Larapie\DataTransferObject\Traits\MakeImmutable;
 
 class DataTransferObjectTest extends TestCase
 {
@@ -414,7 +415,10 @@ class DataTransferObjectTest extends TestCase
         ];
         $object = new class($data) extends DataTransferObject
         {
-            /** @var string|immutable $name */
+            /**
+             * @Immutable
+             * @var string $name
+             */
             public $name;
         };
 
@@ -432,9 +436,11 @@ class DataTransferObjectTest extends TestCase
         ];
         $object = new class($data) extends DataTransferObject
         {
-            use Immutable;
+            use MakeImmutable;
 
-            /** @var string|immutable $name */
+            /**
+             * @var string $name
+             */
             public $name;
         };
 

@@ -2,15 +2,19 @@
 
 All notable changes to `data-transfer-object` will be documented in this file
 
-## 2.1.0" - 2019-04-18
+## 2.2.0 - 2019-04-19
+
+- Annotations for optional & immutable properties
+
+## 2.1.0 - 2019-04-18
 
 - Added support to override or add attributes on non immutable dto's
 
-## 2.0.1" - 2019-04-15
+## 2.0.1 - 2019-04-15
 
 - Improved error messages
 
-## 2.0.0" - 2019-04-15
+## 2.0.0 - 2019-04-15
 
 - new package release (namespace changed). Optional properties support + major immutability improvements
 

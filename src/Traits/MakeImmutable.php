@@ -2,7 +2,7 @@
 
 namespace Larapie\DataTransferObject\Traits;
 
-trait Immutable
+trait MakeImmutable
 {
     public function &__get($name)
     {
