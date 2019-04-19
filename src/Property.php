@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
+use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use ReflectionProperty;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Annotations\Reader;
@@ -14,6 +15,8 @@ use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\Contracts\PropertyContract;
 use Larapie\DataTransferObject\Exceptions\InvalidTypeDtoException;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 class Property implements PropertyContract
 {
@@ -58,7 +61,7 @@ class Property implements PropertyContract
     protected $reflection;
 
     /** @var array */
-    protected $annotations;
+    protected $annotations = [];
 
     /** @var ?Reader */
     protected static $reader;
@@ -73,7 +76,7 @@ class Property implements PropertyContract
     {
         $docComment = $this->reflection->getDocComment();
 
-        if (! $docComment) {
+        if (!$docComment) {
             $this->setNullable(true);
 
             return;
@@ -81,7 +84,7 @@ class Property implements PropertyContract
 
         preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
 
-        if (! count($matches)) {
+        if (!count($matches)) {
             $this->setNullable(true);
 
             return;
@@ -100,7 +103,7 @@ class Property implements PropertyContract
 
     protected function isValidType($value): bool
     {
-        if (! $this->hasTypeDeclaration) {
+        if (!$this->hasTypeDeclaration) {
             return true;
         }
 
@@ -124,7 +127,7 @@ class Property implements PropertyContract
         $castTo = null;
 
         foreach ($this->types as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
+            if (!is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -133,7 +136,7 @@ class Property implements PropertyContract
             break;
         }
 
-        if (! $castTo) {
+        if (!$castTo) {
             return $value;
         }
 
@@ -145,7 +148,7 @@ class Property implements PropertyContract
         $castTo = null;
 
         foreach ($this->arrayTypes as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
+            if (!is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -154,7 +157,7 @@ class Property implements PropertyContract
             break;
         }
 
-        if (! $castTo) {
+        if (!$castTo) {
             return $values;
         }
 
@@ -178,7 +181,7 @@ class Property implements PropertyContract
                 return false;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 return false;
             }
         }
@@ -202,14 +205,14 @@ class Property implements PropertyContract
 
     protected function isValidGenericCollection(string $type, $collection): bool
     {
-        if (! is_array($collection)) {
+        if (!is_array($collection)) {
             return false;
         }
 
         $valueType = str_replace('[]', '', $type);
 
         foreach ($collection as $value) {
-            if (! $this->assertTypeEquals($valueType, $value)) {
+            if (!$this->assertTypeEquals($valueType, $value)) {
                 return false;
             }
         }
@@ -223,7 +226,7 @@ class Property implements PropertyContract
             $value = $this->shouldBeCastToCollection($value) ? $this->castCollection($value) : $this->cast($value);
         }
 
-        if (! $this->isValidType($value)) {
+        if (!$this->isValidType($value)) {
             throw new InvalidTypeDtoException($this, $value);
         }
 
@@ -262,9 +265,26 @@ class Property implements PropertyContract
         $this->nullable = $bool;
     }
 
+    public function validate(): void
+    {
+        $constraints = [];
+        foreach ($this->annotations as $annotation) {
+            if ($annotation instanceof Constraint)
+                $constraints[] = $annotation;
+        }
+        if (empty($constraints))
+            return;
+        $validator = new ValidatorBuilder();
+        $violations = $validator->getValidator()->validate($this->getValue(), $constraints);
+
+        if ($violations->count() > 0)
+            throw new ValidatorException($this->getName(), $violations);
+        return;
+    }
+
     public function immutable(): bool
     {
-        if (! isset($this->immutable)) {
+        if (!isset($this->immutable)) {
             $this->immutable = $this->getAnnotation(Immutable::class) !== null;
         }
 
@@ -298,7 +318,7 @@ class Property implements PropertyContract
 
     public function getValue()
     {
-        if (! $this->nullable() && $this->value == null) {
+        if (!$this->nullable() && $this->value == null) {
             return $this->getDefault();
         }
 
@@ -317,7 +337,7 @@ class Property implements PropertyContract
 
     public function isOptional(): bool
     {
-        if (! isset($this->optional)) {
+        if (!isset($this->optional)) {
             $this->optional = $this->getAnnotation(Optional::class) !== null;
         }
 
@@ -334,7 +354,7 @@ class Property implements PropertyContract
         return $this->optional = false;
     }
 
-    protected function getReader() :Reader
+    protected function getReader(): Reader
     {
         if (self::$reader === null) {
             self::setReader(new CachedReader(new AnnotationReader(), new ArrayCache()));

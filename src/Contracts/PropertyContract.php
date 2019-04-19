@@ -37,4 +37,6 @@ interface PropertyContract
     public function setImmutable(bool $immutable): void;
 
     public function isOptional(): bool;
+
+    public function validate() :void ;
 }

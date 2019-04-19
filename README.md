@@ -160,12 +160,30 @@ class PostData extends DataTransferObject
     public $property;
 }
 ```
-
 When PHP 7.4 introduces typed properties, you'll be able to simply remove the doc blocks and type the properties with the new, built-in syntax.
+
+### Validating Properties
+
+If you want to validate the input of a property. You can do so with annotations.
+
+```php
+class PostData extends DataTransferObject
+{
+    /**
+     * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(min = 3, max = 2)
+     */
+    public $name;
+}
+```
+
+To support this functionality the excellent `symfony\validation` library was used. 
+For more info please checkout https://symfony.com/doc/current/validation.html
 
 ### Optional Properties
 
-If you want to make certain attributes on the dto optional:
+By default all dto properties are required. If you want to make certain properties on the dto optional:
 
 ```php
 class PostData extends DataTransferObject
