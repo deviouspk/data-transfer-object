@@ -5,7 +5,9 @@
         "spatie",
         "larapie",
         "data-transfer-object",
-        "php"
+        "php",
+        "dto",
+        "validation"
     ],
     "homepage": "https://github.com/larapie/data-transfer-object",
     "license": "MIT",
