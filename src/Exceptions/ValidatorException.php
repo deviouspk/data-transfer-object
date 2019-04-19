@@ -8,9 +8,8 @@ class ValidatorException extends \Symfony\Component\Validator\Exception\Validato
     {
         $message = "Property '$propertyName'. ";
         foreach ($violations as $violation) {
-            $message = $message  . $violation->getMessage(). "\n";
+            $message = $message.$violation->getMessage()."\n";
         }
         parent::__construct($message);
     }
-
 }

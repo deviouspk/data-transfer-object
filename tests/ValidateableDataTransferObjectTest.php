@@ -12,7 +12,7 @@ class ValidateableDataTransferObjectTest extends TestCase
     {
         $this->expectException(ValidatorException::class);
         new ValidateablePropertyDto([
-            'name' => "s",
+            'name' => 's',
         ]);
     }
 

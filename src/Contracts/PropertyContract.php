@@ -38,5 +38,5 @@ interface PropertyContract
 
     public function isOptional(): bool;
 
-    public function validate() :void ;
+    public function validate() :void;
 }
