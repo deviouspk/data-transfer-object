@@ -6,23 +6,13 @@ interface PropertyContract
 {
     public function getDefault();
 
-    public function setDefault($default): void;
-
     public function isVisible(): bool;
 
     public function setVisible(bool $bool);
 
     public function getValue();
 
-    public function getValueFromReflection($object);
-
     public function getName(): string;
-
-    public function set($value): void;
-
-    public function setInitialized(bool $bool): void;
-
-    public function isInitialized(): bool;
 
     public function getTypes(): array;
 
@@ -38,5 +28,6 @@ interface PropertyContract
 
     public function isOptional(): bool;
 
-    public function validate() :void;
+    public function getConstraints(): array;
+
 }

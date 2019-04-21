@@ -4,384 +4,131 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
+use Larapie\DataTransferObject\Casters\TypeCaster;
+use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
+use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
 use ReflectionProperty;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Annotations\Reader;
-use Symfony\Component\Validator\Constraint;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\ValidatorBuilder;
-use Larapie\DataTransferObject\Annotations\Optional;
-use Larapie\DataTransferObject\Annotations\Immutable;
-use Larapie\DataTransferObject\Contracts\DtoContract;
-use Larapie\DataTransferObject\Contracts\PropertyContract;
-use Larapie\DataTransferObject\Exceptions\ValidatorException;
-use Larapie\DataTransferObject\Exceptions\InvalidTypeDtoException;
 
-class Property implements PropertyContract
+class Property
 {
-    /** @var array */
-    protected const TYPE_MAPPING = [
-        'int' => 'integer',
-        'bool' => 'boolean',
-        'float' => 'double',
-    ];
-
-    /** @var bool */
-    protected $hasTypeDeclaration = false;
-
-    /** @var bool */
-    protected $nullable = false;
-
-    /** @var bool */
-    protected $optional;
-
-    /** @var bool */
-    protected $initialised = false;
-
-    /** @var bool */
-    protected $immutable;
-
-    /** @var bool */
-    protected $visible = true;
-
-    /** @var array */
-    protected $types = [];
-
-    /** @var array */
-    protected $arrayTypes = [];
-
-    /** @var mixed */
-    protected $default;
+    /** @var PropertyData */
+    protected $data;
 
     /** @var mixed */
     public $value;
 
-    /** @var ReflectionProperty */
-    protected $reflection;
+    /** @var bool */
+    protected $initialized = false;
 
-    /** @var array */
-    protected $annotations = [];
+    /** @var bool */
+    protected $visible = true;
 
-    /** @var ?Reader */
-    protected static $reader;
+    /** @var ConstraintViolationListInterface|null */
+    protected $violations;
 
-    public function __construct(ReflectionProperty $reflectionProperty)
+    /**
+     * PropertyValue constructor.
+     * @param ReflectionProperty $reflection
+     */
+    public function __construct(ReflectionProperty $reflection)
     {
-        $this->reflection = $reflectionProperty;
-        $this->resolveTypeDefinition();
+        $this->boot($reflection);
     }
 
-    protected function resolveTypeDefinition()
+    public function boot(ReflectionProperty $property)
     {
-        $docComment = $this->reflection->getDocComment();
-
-        if (! $docComment) {
-            $this->setNullable(true);
-
-            return;
-        }
-
-        preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
-
-        if (! count($matches)) {
-            $this->setNullable(true);
-
-            return;
-        }
-
-        $varDocComment = end($matches);
-
-        $this->types = explode('|', $varDocComment);
-        $this->arrayTypes = str_replace('[]', '', $this->types);
-        $this->setAnnotations();
-
-        $this->hasTypeDeclaration = true;
-
-        $this->setNullable(strpos($varDocComment, 'null') !== false);
+        $this->data = new PropertyData($property);
+        $this->violations = new ConstraintViolationList();
+        $this->initViolations();
     }
 
-    protected function isValidType($value): bool
-    {
-        if (! $this->hasTypeDeclaration) {
-            return true;
-        }
-
-        if ($this->nullable() && $value === null) {
-            return true;
-        }
-
-        foreach ($this->types as $currentType) {
-            $isValidType = $this->assertTypeEquals($currentType, $value);
-
-            if ($isValidType) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected function cast($value)
-    {
-        $castTo = null;
-
-        foreach ($this->types as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
-                continue;
-            }
-
-            $castTo = $type;
-
-            break;
-        }
-
-        if (! $castTo) {
-            return $value;
-        }
-
-        return new $castTo($value);
-    }
-
-    protected function castCollection(array $values)
-    {
-        $castTo = null;
-
-        foreach ($this->arrayTypes as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
-                continue;
-            }
-
-            $castTo = $type;
-
-            break;
-        }
-
-        if (! $castTo) {
-            return $values;
-        }
-
-        $casts = [];
-
-        foreach ($values as $value) {
-            $casts[] = new $castTo($value);
-        }
-
-        return $casts;
-    }
-
-    protected function shouldBeCastToCollection(array $values): bool
-    {
-        if (empty($values)) {
-            return false;
-        }
-
-        foreach ($values as $key => $value) {
-            if (is_string($key)) {
-                return false;
-            }
-
-            if (! is_array($value)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    protected function assertTypeEquals(string $type, $value): bool
-    {
-        if (strpos($type, '[]') !== false) {
-            return $this->isValidGenericCollection($type, $value);
-        }
-
-        if ($type === 'mixed' && $value !== null) {
-            return true;
-        }
-
-        return $value instanceof $type
-            || gettype($value) === (self::TYPE_MAPPING[$type] ?? $type);
-    }
-
-    protected function isValidGenericCollection(string $type, $collection): bool
-    {
-        if (! is_array($collection)) {
-            return false;
-        }
-
-        $valueType = str_replace('[]', '', $type);
-
-        foreach ($collection as $value) {
-            if (! $this->assertTypeEquals($valueType, $value)) {
-                return false;
-            }
-        }
-
-        return true;
+    protected function initViolations(){
+        if (!$this->data->isOptional())
+            $this->violations->add(new PropertyRequiredViolation());
     }
 
     public function set($value): void
     {
-        if (is_array($value)) {
-            $value = $this->shouldBeCastToCollection($value) ? $this->castCollection($value) : $this->cast($value);
-        }
-
-        if (! $this->isValidType($value)) {
-            throw new InvalidTypeDtoException($this, $value);
-        }
-
-        $this->setInitialized(true);
-
+        $value = (new TypeCaster($this->data->getType()))->cast($value);
         $this->value = $value;
+        $this->initialized = true;
+        $this->violations = $this->validate($value);
     }
 
-    public function setInitialized(bool $bool): void
+    public function reset()
     {
-        $this->initialised = $bool;
+        $this->value = null;
+        $this->initialized = false;
+        $this->initViolations();
     }
 
-    public function isInitialized(): bool
+    public function isInitialized()
     {
-        return $this->initialised;
+        return $this->initialized;
     }
 
-    public function getTypes(): array
+    public function validate($value): ?ConstraintViolationListInterface
     {
-        return $this->types;
-    }
+        $constraints = $this->data->getConstraints();
 
-    public function getFqn(): string
-    {
-        return "{$this->reflection->getDeclaringClass()->getName()}::{$this->reflection->getName()}";
-    }
+        $violations = (new ValidatorBuilder())->getValidator()->validate($value, $constraints);
 
-    public function nullable(): bool
-    {
-        return $this->nullable;
-    }
-
-    public function setNullable(bool $bool): void
-    {
-        $this->nullable = $bool;
-    }
-
-    public function validate(): void
-    {
-        $constraints = [];
-        foreach ($this->annotations as $annotation) {
-            if ($annotation instanceof Constraint) {
-                $constraints[] = $annotation;
-            }
+        if (!$this->isInitialized() && !$this->data->isOptional()) {
+            $violations->add(new PropertyRequiredViolation());
         }
-        if (empty($constraints)) {
-            return;
-        }
-        $validator = new ValidatorBuilder();
-        $violations = $validator->getValidator()->validate($this->getValue(), $constraints);
-
-        if ($violations->count() > 0) {
-            throw new ValidatorException($this->getName(), $violations);
-        }
-    }
-
-    public function immutable(): bool
-    {
-        if (! isset($this->immutable)) {
-            $this->immutable = $this->getAnnotation(Immutable::class) !== null;
+        if (!$this->data->getType()->isValid($value)) {
+            $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
         }
 
-        return $this->immutable;
+        return $violations;
     }
 
-    public function setImmutable(bool $immutable): void
+    public function isValid()
     {
-        $this->immutable = $immutable;
+        return $this->violations === null || $this->violations->count() <= 0;
     }
 
-    public function getDefault()
+    /**
+     * @return ConstraintViolationListInterface|null
+     */
+    public function getViolations(): ?ConstraintViolationListInterface
     {
-        return $this->default;
+        return $this->violations;
     }
 
-    public function setDefault($default): void
+    public function isImmutable()
     {
-        $this->default = $default;
+        return $this->data->isImmutable();
     }
 
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getName()
+    {
+        return $this->data->getName();
+    }
+
+    /**
+     * @return bool
+     */
     public function isVisible(): bool
     {
         return $this->visible;
     }
 
-    public function setVisible(bool $bool): bool
+    /**
+     * @param bool $visible
+     */
+    public function setVisible(bool $visible): void
     {
-        return $this->visible = $bool;
+        $this->visible = $visible;
     }
 
-    public function getValue()
-    {
-        if (! $this->nullable() && $this->value == null) {
-            return $this->getDefault();
-        }
 
-        return $this->value;
-    }
-
-    public function getValueFromReflection($object)
-    {
-        return $this->reflection->getValue($object);
-    }
-
-    public function getName(): string
-    {
-        return $this->reflection->getName();
-    }
-
-    public function isOptional(): bool
-    {
-        if (! isset($this->optional)) {
-            $this->optional = $this->getAnnotation(Optional::class) !== null;
-        }
-
-        return $this->optional;
-    }
-
-    public function setOptional(): bool
-    {
-        return $this->optional = true;
-    }
-
-    public function setRequired(): bool
-    {
-        return $this->optional = false;
-    }
-
-    protected function getReader(): Reader
-    {
-        if (self::$reader === null) {
-            self::setReader(new CachedReader(new AnnotationReader(), new ArrayCache()));
-        }
-
-        return self::$reader;
-    }
-
-    public static function setReader(Reader $reader)
-    {
-        \Doctrine\Common\Annotations\AnnotationRegistry::registerUniqueLoader('class_exists');
-        self::$reader = $reader;
-    }
-
-    protected function setAnnotations()
-    {
-        $annotations = [];
-        foreach (self::getReader()->getPropertyAnnotations($this->reflection) as $annotation) {
-            $annotations[get_class($annotation)] = $annotation;
-        }
-        $this->annotations = $annotations;
-    }
-
-    protected function getAnnotation($annotation)
-    {
-        return $this->annotations[$annotation] ?? null;
-    }
 }

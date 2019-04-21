@@ -32,6 +32,7 @@
         "symfony/validator": "^4.2"
     },
     "require-dev": {
+        "jchook/phpunit-assert-throws": "^1.0",
         "larapack/dd": "^1.0",
         "phpunit/phpunit": "^7.0"
     },

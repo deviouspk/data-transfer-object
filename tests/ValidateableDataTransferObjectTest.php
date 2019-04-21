@@ -11,9 +11,10 @@ class ValidateableDataTransferObjectTest extends TestCase
     public function validate_string_property()
     {
         $this->expectException(ValidatorException::class);
-        new ValidateablePropertyDto([
-            'name' => 's',
+        $dto = new ValidateablePropertyDto([
+            'name' => "zefqsdfqsdfqsdfqsdf",
         ]);
+        $dto->validate();
     }
 
     /** @test */

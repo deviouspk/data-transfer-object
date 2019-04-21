@@ -98,12 +98,12 @@ class ImmutableDataTransferObjectTest extends TestCase
             'name' => 'parent',
             'children' => [
                 new NestedChild(['name' => 'arthur']),
-                new NestedChild(['name' => 'brendt']),
+                new NestedChild(['name' => 'brendt'])
             ],
         ];
 
         $dto = new ImmutableNestedDto($data);
-
+        $array = $dto->toArray();
         $this->assertEquals($dto->name, 'parent');
         $this->assertEquals($dto->children[0]->name, 'arthur');
         $this->assertEquals($dto->children[1]->name, 'brendt');

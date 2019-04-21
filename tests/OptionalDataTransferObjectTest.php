@@ -34,7 +34,7 @@ class OptionalDataTransferObjectTest extends TestCase
         $dto = new OptionalPropertyDto([
             'name' => 'test',
         ]);
-        $data = $dto->toArray();
+        $dto->validate();
         $this->assertTrue(true);
     }
 }
