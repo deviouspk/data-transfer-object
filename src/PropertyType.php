@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Larapie\DataTransferObject;
-
 
 class PropertyType
 {
@@ -87,7 +85,7 @@ class PropertyType
 
     public function isValid($value): bool
     {
-        if (!$this->hasType) {
+        if (! $this->hasType) {
             return true;
         }
 
@@ -122,22 +120,18 @@ class PropertyType
 
     protected function isValidGenericCollection(string $type, $collection): bool
     {
-        if (!is_array($collection)) {
+        if (! is_array($collection)) {
             return false;
         }
 
         $valueType = str_replace('[]', '', $type);
 
         foreach ($collection as $value) {
-            if (!$this->assertTypeEquals($valueType, $value)) {
+            if (! $this->assertTypeEquals($valueType, $value)) {
                 return false;
             }
         }
 
         return true;
     }
-
-
-
-
 }

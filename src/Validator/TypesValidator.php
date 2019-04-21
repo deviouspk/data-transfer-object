@@ -1,11 +1,9 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Validator;
 
-
-use Larapie\DataTransferObject\Constraints\Types;
 use Symfony\Component\Validator\Constraint;
+use Larapie\DataTransferObject\Constraints\Types;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
@@ -16,8 +14,8 @@ class TypesValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof Types) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\Type');
+        if (! $constraint instanceof Types) {
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Type');
         }
 
         if (null === $value) {
@@ -25,7 +23,5 @@ class TypesValidator extends ConstraintValidator
         }
 
         //TODO IMPLEMENT TYPE VALIDATION;
-
-        return;
     }
 }

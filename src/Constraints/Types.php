@@ -1,10 +1,9 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Constraints;
 
-use Larapie\DataTransferObject\Validator\TypesValidator;
 use Symfony\Component\Validator\Constraint;
+use Larapie\DataTransferObject\Validator\TypesValidator;
 
 /**
  * @Annotation

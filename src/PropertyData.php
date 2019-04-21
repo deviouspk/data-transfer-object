@@ -1,18 +1,16 @@
 <?php
 
-
 namespace Larapie\DataTransferObject;
 
-
+use ReflectionProperty;
+use Doctrine\Common\Annotations\Reader;
+use Symfony\Component\Validator\Constraint;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
-use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Annotations\Optional;
-use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
+use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Resolvers\TypeResolver;
-use ReflectionProperty;
-use Symfony\Component\Validator\Constraint;
+use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
 
 class PropertyData
 {
@@ -44,7 +42,7 @@ class PropertyData
     public function __construct(ReflectionProperty $property)
     {
         $this->name = $property->getName();
-        $this->fqn = "{$property->getDeclaringClass()->getName()}::{$property->getName()}";;
+        $this->fqn = "{$property->getDeclaringClass()->getName()}::{$property->getName()}";
         $this->boot($property);
     }
 
@@ -68,24 +66,29 @@ class PropertyData
         foreach (self::getReader()->getPropertyAnnotations($reflection) as $annotation) {
             $annotations[] = $annotation;
         }
+
         return (new AnnotationResolver($reflection))->resolve();
     }
 
     protected function resolveOptional($annotations)
     {
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Optional)
+            if ($annotation instanceof Optional) {
                 return true;
+            }
         }
+
         return false;
     }
 
     protected function resolveImmutable($annotations)
     {
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Immutable)
+            if ($annotation instanceof Immutable) {
                 return true;
+            }
         }
+
         return false;
     }
 
@@ -93,18 +96,21 @@ class PropertyData
     {
         $constraints = [];
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Constraint)
+            if ($annotation instanceof Constraint) {
                 $constraints[] = $annotation;
+            }
         }
+
         return $constraints;
     }
 
     protected static function getReader()
     {
         AnnotationRegistry::registerUniqueLoader('class_exists');
-        if (!isset(self::$reader)) {
+        if (! isset(self::$reader)) {
             self::$reader = new AnnotationReader();
         }
+
         return self::$reader;
     }
 
@@ -155,5 +161,4 @@ class PropertyData
     {
         return $this->constraints;
     }
-
 }

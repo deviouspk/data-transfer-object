@@ -1,16 +1,14 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Factories;
 
-
-use Larapie\DataTransferObject\Contracts\AdditionalProperties;
-use Larapie\DataTransferObject\Contracts\DtoContract;
-use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
-use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
-use Larapie\DataTransferObject\Property;
 use ReflectionClass;
 use ReflectionProperty;
+use Larapie\DataTransferObject\Property;
+use Larapie\DataTransferObject\Contracts\DtoContract;
+use Larapie\DataTransferObject\Contracts\AdditionalProperties;
+use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
+use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
 
 class PropertyFactory
 {
@@ -20,7 +18,7 @@ class PropertyFactory
     protected $dto;
 
     /**
-     * @var Property[] $cache
+     * @var Property[]
      */
     private static $cache = [];
 
@@ -37,7 +35,6 @@ class PropertyFactory
     {
         $properties = [];
         foreach ($this->buildPublicProperties() as $property) {
-
             if (array_key_exists($property->getName(), $parameters)) {
                 $property->set($parameters[$property->getName()]);
             }
@@ -61,7 +58,7 @@ class PropertyFactory
 
     protected function buildPublicProperties(): array
     {
-        if (!isset(self::$cache[$this->getDtoClass()])) {
+        if (! isset(self::$cache[$this->getDtoClass()])) {
             $class = new ReflectionClass($this->dto);
 
             $properties = [];
@@ -69,14 +66,17 @@ class PropertyFactory
                 $property = new Property($reflectionProperty);
 
                 //Set default value
-                if (($default = $reflectionProperty->getValue($this->dto)) !== null)
+                if (($default = $reflectionProperty->getValue($this->dto)) !== null) {
                     $property->set($reflectionProperty->getValue($this->dto));
+                }
 
                 $properties[$reflectionProperty->getName()] = $property;
             }
             self::$cache[$this->getDtoClass()] = $properties;
+
             return $properties;
         }
+
         return $this->getFreshProperties();
     }
 
@@ -88,21 +88,21 @@ class PropertyFactory
             $property->reset();
             $properties[$key] = $property;
         }
+
         return $properties;
     }
 
     protected function checkRemainingProperties(array $parameters)
     {
-        if (empty($parameters))
+        if (empty($parameters)) {
             return;
-        elseif ($this instanceof WithAdditionalProperties) {
+        } elseif ($this instanceof WithAdditionalProperties) {
             foreach ($parameters as $name => $parameter) {
                 $this->dto->with($name, $parameter);
             }
-        } elseif ($this instanceof AdditionalProperties)
+        } elseif ($this instanceof AdditionalProperties) {
             return;
+        }
         throw new UnknownPropertiesDtoException($parameters, $this->getDtoClass());
     }
-
-
 }

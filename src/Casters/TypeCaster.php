@@ -1,16 +1,14 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Casters;
 
-
-use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\PropertyType;
+use Larapie\DataTransferObject\Contracts\DtoContract;
 
 class TypeCaster
 {
     /**
-     * @var PropertyType $type
+     * @var PropertyType
      */
     protected $type;
 
@@ -30,18 +28,20 @@ class TypeCaster
         if (is_array($value)) {
             $value = $this->shouldBeCastToCollection($value) ? $this->castCollection($value) : $this->castDto($value);
         }
+
         return $value;
     }
-
 
     protected function castDto($value)
     {
         foreach ($this->type->getTypes() as $type) {
             if (is_subclass_of($type, DtoContract::class)) {
-                if (is_array($value))
+                if (is_array($value)) {
                     return new $type($value);
+                }
             }
         }
+
         return $value;
     }
 
@@ -50,7 +50,7 @@ class TypeCaster
         $castTo = null;
 
         foreach ($this->type->getArrayTypes() as $type) {
-            if (!is_subclass_of($type, DtoContract::class)) {
+            if (! is_subclass_of($type, DtoContract::class)) {
                 continue;
             }
 
@@ -59,7 +59,7 @@ class TypeCaster
             break;
         }
 
-        if (!$castTo) {
+        if (! $castTo) {
             return $values;
         }
 
@@ -83,7 +83,7 @@ class TypeCaster
                 return false;
             }
 
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 return false;
             }
         }
