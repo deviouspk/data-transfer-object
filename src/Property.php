@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
-use Larapie\DataTransferObject\Casters\TypeCaster;
-use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
-use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
 use ReflectionProperty;
+use Symfony\Component\Validator\ValidatorBuilder;
+use Larapie\DataTransferObject\Casters\TypeCaster;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\ValidatorBuilder;
+use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
+use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
 
 class Property
 {
@@ -45,9 +45,11 @@ class Property
         $this->initViolations();
     }
 
-    protected function initViolations(){
-        if (!$this->data->isOptional())
+    protected function initViolations()
+    {
+        if (! $this->data->isOptional()) {
             $this->violations->add(new PropertyRequiredViolation());
+        }
     }
 
     public function set($value): void
@@ -76,10 +78,10 @@ class Property
 
         $violations = (new ValidatorBuilder())->getValidator()->validate($value, $constraints);
 
-        if (!$this->isInitialized() && !$this->data->isOptional()) {
+        if (! $this->isInitialized() && ! $this->data->isOptional()) {
             $violations->add(new PropertyRequiredViolation());
         }
-        if (!$this->data->getType()->isValid($value)) {
+        if (! $this->data->getType()->isValid($value)) {
             $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
         }
 
@@ -129,6 +131,4 @@ class Property
     {
         $this->visible = $visible;
     }
-
-
 }

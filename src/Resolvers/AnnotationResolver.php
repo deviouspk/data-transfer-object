@@ -1,18 +1,15 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Resolvers;
 
-
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\ArrayCache;
 use ReflectionProperty;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\AnnotationReader;
 
 class AnnotationResolver
 {
-
     /**
      * @var ReflectionProperty
      */
@@ -36,6 +33,7 @@ class AnnotationResolver
         foreach (self::getReader()->getPropertyAnnotations($this->reflection) as $annotation) {
             $annotations[get_class($annotation)] = $annotation;
         }
+
         return $annotations;
     }
 
@@ -53,5 +51,4 @@ class AnnotationResolver
 
         return self::$reader;
     }
-
 }

@@ -29,5 +29,4 @@ interface PropertyContract
     public function isOptional(): bool;
 
     public function getConstraints(): array;
-
 }

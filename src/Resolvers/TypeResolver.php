@@ -1,15 +1,12 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Resolvers;
 
-
-use Larapie\DataTransferObject\PropertyType;
 use ReflectionProperty;
+use Larapie\DataTransferObject\PropertyType;
 
 class TypeResolver
 {
-
     /**
      * @var ReflectionProperty
      */
@@ -24,16 +21,16 @@ class TypeResolver
         $this->reflection = $reflection;
     }
 
-
     /**
      * @return PropertyType
      */
-    public function resolve() :PropertyType{
+    public function resolve() :PropertyType
+    {
         $type = new PropertyType();
 
         $docComment = $this->reflection->getDocComment();
 
-        if (!$docComment) {
+        if (! $docComment) {
             $type->setNullable(true);
 
             return $type;
@@ -41,7 +38,7 @@ class TypeResolver
 
         preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
 
-        if (!count($matches)) {
+        if (! count($matches)) {
             $type->setNullable(true);
 
             return $type;
@@ -56,6 +53,4 @@ class TypeResolver
 
         return $type;
     }
-
-
 }

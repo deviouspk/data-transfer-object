@@ -98,7 +98,7 @@ class ImmutableDataTransferObjectTest extends TestCase
             'name' => 'parent',
             'children' => [
                 new NestedChild(['name' => 'arthur']),
-                new NestedChild(['name' => 'brendt'])
+                new NestedChild(['name' => 'brendt']),
             ],
         ];
 

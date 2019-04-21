@@ -6,7 +6,6 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ValidatorException extends \Symfony\Component\Validator\Exception\ValidatorException
 {
-
     /**
      * @var ConstraintViolationListInterface[]
      */
@@ -20,15 +19,17 @@ class ValidatorException extends \Symfony\Component\Validator\Exception\Validato
 
     protected function buildMessage($violations): string
     {
-        $message = "";
+        $message = '';
         foreach ($violations as $propertyName => $propertyViolations) {
-            if (!empty($propertyViolations))
-                $message = $message . "Exception on property '" . $propertyName . "': ";
-            foreach ($propertyViolations as $violation) {
-                $message = $message . $violation->getMessage() . "";
+            if (! empty($propertyViolations)) {
+                $message = $message."Exception on property '".$propertyName."': ";
             }
-            $message = $message . "\n";
+            foreach ($propertyViolations as $violation) {
+                $message = $message.$violation->getMessage().'';
+            }
+            $message = $message."\n";
         }
+
         return $message;
     }
 
@@ -36,10 +37,12 @@ class ValidatorException extends \Symfony\Component\Validator\Exception\Validato
     {
         if (array_key_exists($property, $this->violations)) {
             foreach ($this->violations[$property] as $violation) {
-                if ($violation instanceof $violationClass)
+                if ($violation instanceof $violationClass) {
                     return true;
+                }
             }
         }
+
         return false;
     }
 
@@ -47,5 +50,4 @@ class ValidatorException extends \Symfony\Component\Validator\Exception\Validato
     {
         return $this->violations;
     }
-
 }
