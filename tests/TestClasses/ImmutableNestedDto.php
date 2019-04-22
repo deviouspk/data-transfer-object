@@ -14,6 +14,6 @@ class ImmutableNestedDto extends DataTransferObject
     /** @var string */
     public $name;
 
-    /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedChild[]|array $child */
+    /** @var NestedChild[]|array $child */
     public $children;
 }

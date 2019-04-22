@@ -8,7 +8,7 @@ use Larapie\DataTransferObject\DataTransferObject;
 
 class NestedParentOfMany extends DataTransferObject
 {
-    /** @var \Larapie\DataTransferObject\Tests\TestClasses\NestedChild[] */
+    /** @var NestedChild[] */
     public $children;
 
     /** @var string */
