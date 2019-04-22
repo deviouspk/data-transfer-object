@@ -2,7 +2,24 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
+use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
+use phpDocumentor\Reflection\Types\Array_;
+use phpDocumentor\Reflection\Types\Boolean;
+use phpDocumentor\Reflection\Types\Callable_;
 use phpDocumentor\Reflection\Types\Compound;
+use phpDocumentor\Reflection\Types\Float_;
+use phpDocumentor\Reflection\Types\Integer;
+use phpDocumentor\Reflection\Types\Iterable_;
+use phpDocumentor\Reflection\Types\Mixed_;
+use phpDocumentor\Reflection\Types\Null_;
+use phpDocumentor\Reflection\Types\Object_;
+use phpDocumentor\Reflection\Types\Parent_;
+use phpDocumentor\Reflection\Types\Resource_;
+use phpDocumentor\Reflection\Types\Scalar;
+use phpDocumentor\Reflection\Types\Self_;
+use phpDocumentor\Reflection\Types\Static_;
+use phpDocumentor\Reflection\Types\String_;
+use phpDocumentor\Reflection\Types\Void_;
 use ReflectionProperty;
 use Larapie\DataTransferObject\PropertyType;
 
@@ -12,6 +29,33 @@ class TypeResolver
      * @var ReflectionProperty
      */
     protected $reflection;
+
+    /** @var string[] List of recognized keywords and unto which Value Object they map */
+    private static $typeKeywords = array(
+        'string',
+        'int',
+        'integer',
+        'bool',
+        'boolean',
+        'float',
+        'double',
+        'object',
+        'mixed',
+        'array',
+        'resource',
+        'void',
+        'null',
+        'scalar',
+        'callback',
+        'callable',
+        'false',
+        'true',
+        'self',
+        '$this',
+        'static',
+        'parent',
+        'iterable'
+    );
 
     /**
      * TypeResolver constructor.
@@ -80,6 +124,7 @@ class TypeResolver
         } else {
             $types = [$resolvedTypes->__toString()];
         }
+        $this->checkTypeExistance($types);
         return $types;
     }
 
@@ -110,5 +155,31 @@ class TypeResolver
         return $this->getNamespaceFromFilename($fileName) . '\\' . $this->getClassFromFilename($fileName);
     }
 
+    protected function checkTypeExistance(array $types)
+    {
+        foreach ($types as $type) {
+            $type = str_replace("[]","",$type);
+            if (!in_array($type, self::$typeKeywords)){
+                if(!$this->classExists($type))
+                    throw new TypeDoesNotExistException(sprintf(
+                        'The @var annotation on %s::%s contains a non existent class "%s". '
+                        . 'Did you maybe forget to add a "use" statement for this annotation?',
+                        $this->reflection->getDeclaringClass()->getName(),
+                        $this->reflection->getName(),
+                        $type
+                    ));
+            }
+
+        }
+    }
+
+    /**
+     * @param string $class
+     * @return bool
+     */
+    private function classExists($class)
+    {
+        return class_exists($class) || interface_exists($class);
+    }
 
 }
