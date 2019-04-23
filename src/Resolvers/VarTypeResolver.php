@@ -1,33 +1,16 @@
 <?php
 
+
 namespace Larapie\DataTransferObject\Resolvers;
 
-use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
-use phpDocumentor\Reflection\Types\Array_;
-use phpDocumentor\Reflection\Types\Boolean;
-use phpDocumentor\Reflection\Types\Callable_;
-use phpDocumentor\Reflection\Types\Compound;
-use phpDocumentor\Reflection\Types\Float_;
-use phpDocumentor\Reflection\Types\Integer;
-use phpDocumentor\Reflection\Types\Iterable_;
-use phpDocumentor\Reflection\Types\Mixed_;
-use phpDocumentor\Reflection\Types\Null_;
-use phpDocumentor\Reflection\Types\Object_;
-use phpDocumentor\Reflection\Types\Parent_;
-use phpDocumentor\Reflection\Types\Resource_;
-use phpDocumentor\Reflection\Types\Scalar;
-use phpDocumentor\Reflection\Types\Self_;
-use phpDocumentor\Reflection\Types\Static_;
-use phpDocumentor\Reflection\Types\String_;
-use phpDocumentor\Reflection\Types\Void_;
-use ReflectionProperty;
-use Larapie\DataTransferObject\PropertyType;
 
-class TypeResolver
+use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
+use phpDocumentor\Reflection\TypeResolver;
+use phpDocumentor\Reflection\Types\Compound;
+use ReflectionProperty;
+
+class VarTypeResolver
 {
-    /**
-     * @var ReflectionProperty
-     */
     protected $reflection;
 
     /** @var string[] List of recognized keywords and unto which Value Object they map */
@@ -58,51 +41,15 @@ class TypeResolver
     );
 
     /**
-     * TypeResolver constructor.
-     * @param ReflectionProperty $reflection
+     * VarTypeResolver constructor.
+     * @param $reflection
      */
     public function __construct(ReflectionProperty $reflection)
     {
         $this->reflection = $reflection;
     }
 
-    /**
-     * @return PropertyType
-     */
-    public function resolve(): PropertyType
-    {
-        $type = new PropertyType();
-
-        $docComment = $this->reflection->getDocComment();
-
-        if (!$docComment) {
-            $type->setNullable(true);
-
-            return $type;
-        }
-
-        preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
-
-        if (!count($matches)) {
-            $type->setNullable(true);
-
-            return $type;
-        }
-
-        $varDocComment = end($matches);
-
-
-        $types = $this->resolveTypesFromVarDoc($varDocComment);
-
-        $type->setTypes($types);
-        $type->setArrayTypes(str_replace('[]', '', $types));
-        $type->setHasType(true);
-        $type->setNullable(strpos($varDocComment, 'null') !== false);
-
-        return $type;
-    }
-
-    protected function resolveTypesFromVarDoc(string $varDocComment)
+    public function resolve(string $varDocComment) :array
     {
         if ($this->reflection->getDeclaringClass()->isAnonymous()) {
             $filename = $this->reflection->getDeclaringClass()->getFileName();
@@ -114,7 +61,7 @@ class TypeResolver
             $context = $contextFactory->createFromReflector($this->reflection);
         }
 
-        $resolver = new \phpDocumentor\Reflection\TypeResolver();
+        $resolver = new TypeResolver();
         $resolvedTypes = $resolver->resolve($varDocComment, $context);
         $types = [];
         if ($resolvedTypes instanceof Compound) {
@@ -124,43 +71,39 @@ class TypeResolver
         } else {
             $types = [$resolvedTypes->__toString()];
         }
-        $this->checkTypeExistance($types);
+        $this->checkTypeExistence($types);
         return $types;
     }
 
-    protected function getClassFromFilename($fileName)
+    protected function getClassFromFilename($fileName) :string
     {
         $directoriesAndFilename = explode('/', $fileName);
         $fileName = array_pop($directoriesAndFilename);
         $nameAndExtension = explode('.', $fileName);
-        $className = array_shift($nameAndExtension);
-
-        return $className;
+        return array_shift($nameAndExtension);
     }
 
-    protected function getNamespaceFromFilename($filename)
+    protected function getNamespaceFromFilename($filename) :string
     {
         $lines = file($filename);
         $namespace = preg_grep('/^namespace /', $lines);
         $namespaceLine = array_shift($namespace);
         $match = array();
         preg_match('/^namespace (.*);$/', $namespaceLine, $match);
-        $fullNamespace = array_pop($match);
-
-        return $fullNamespace;
+        return $fullNamespace = array_pop($match);
     }
 
-    protected function getFqnFromFileName($fileName)
+    protected function getFqnFromFileName($fileName) :string
     {
         return $this->getNamespaceFromFilename($fileName) . '\\' . $this->getClassFromFilename($fileName);
     }
 
-    protected function checkTypeExistance(array $types)
+    protected function checkTypeExistence(array $types)
     {
         foreach ($types as $type) {
-            $type = str_replace("[]","",$type);
-            if (!in_array($type, self::$typeKeywords)){
-                if(!$this->classExists($type))
+            $type = str_replace("[]", "", $type);
+            if (!in_array($type, self::$typeKeywords)) {
+                if (!$this->classExists($type))
                     throw new TypeDoesNotExistException(sprintf(
                         'The @var annotation on %s::%s contains a non existent class "%s". '
                         . 'Did you maybe forget to add a "use" statement for this annotation?',

@@ -9,7 +9,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Larapie\DataTransferObject\Annotations\Optional;
 use Larapie\DataTransferObject\Annotations\Immutable;
-use Larapie\DataTransferObject\Resolvers\TypeResolver;
+use Larapie\DataTransferObject\Resolvers\PropertyTypeResolver;
 use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
 
 class PropertyData
@@ -57,7 +57,7 @@ class PropertyData
 
     protected function resolveType(ReflectionProperty $reflection)
     {
-        return (new TypeResolver($reflection))->resolve();
+        return (new PropertyTypeResolver($reflection))->resolve();
     }
 
     protected function resolveAnnotations(ReflectionProperty $reflection)

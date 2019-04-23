@@ -12,8 +12,8 @@ class InvalidPropertyTypeViolation extends ConstraintViolation
     public function __construct(array $types)
     {
         parent::__construct(
-            'wrong type should be '.implode('|', $types),
-            'wrong type should be '.implode('|', $types),
+            'invalid type should be '.implode('|', $types),
+            'invalid type should be '.implode('|', $types),
             [],
             null,
             '',

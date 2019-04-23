@@ -62,7 +62,7 @@ abstract class DataTransferObject implements DtoContract
 
     protected function setImmutable(): void
     {
-        if (! $this->isImmutable()) {
+        if (!$this->isImmutable()) {
             $this->immutable = true;
             foreach ($this->properties as $property) {
                 $this->chainPropertyImmutable($property);
@@ -96,7 +96,7 @@ abstract class DataTransferObject implements DtoContract
         if ($this->immutable) {
             throw new ImmutableDtoException($name);
         }
-        if (! isset($this->properties[$name])) {
+        if (!isset($this->properties[$name])) {
             throw new PropertyNotFoundDtoException($name, get_class($this));
         }
 
@@ -187,7 +187,7 @@ abstract class DataTransferObject implements DtoContract
         $array = [];
 
         if (count($this->onlyKeys)) {
-            $array = array_intersect_key($data, array_flip((array) $this->onlyKeys));
+            $array = array_intersect_key($data, array_flip((array)$this->onlyKeys));
         } else {
             foreach ($data as $key => $propertyValue) {
                 if (array_key_exists($key, $this->properties) && $this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
@@ -211,7 +211,7 @@ abstract class DataTransferObject implements DtoContract
                 continue;
             }
 
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 continue;
             }
 
@@ -241,19 +241,50 @@ abstract class DataTransferObject implements DtoContract
         throw new ValidatorException($violations);
     }
 
-    public function validate()
+    protected function getViolations()
     {
         $violations = [];
         foreach ($this->properties as $name => $property) {
+            if (($value = $property->getValue()) instanceof DataTransferObject) {
+                $nestedViolations = $this->recursivelySortKeys($value->getViolations(),$name);
+                $violations = array_merge($violations,$nestedViolations);
+            }
             $violationList = $property->getViolations();
             if ($violationList === null || $violationList->count() <= 0) {
                 continue;
             }
             $violations[$name] = $violationList;
         }
+        return $violations;
+    }
 
-        if (! empty($violations)) {
+    public function validate()
+    {
+        $violations = $this->getViolations();
+        if (!empty($violations)) {
             throw new ValidatorException($violations);
         }
+    }
+
+    protected function recursivelySortKeys(array $array, $str = '')
+    {
+        $sortedArray = [];
+        foreach ($array as $key => $val) {
+            if (is_array($val)) {
+                if ($str == '') {
+                    $this->recursivelySortKeys($val, $key);
+                } else {
+                    $this->recursivelySortKeys($val, $str . '.' . $key);
+                }
+            } else {
+                if ($str == '') {
+                    $sortedArray[$key] = $val;
+                    echo $key . "\n";
+                } else {
+                    $sortedArray[$str . '.' . $key] = $val;
+                }
+            }
+        }
+        return $sortedArray;
     }
 }
