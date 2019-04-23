@@ -1,20 +1,18 @@
 <?php
 
-
 namespace Larapie\DataTransferObject\Resolvers;
 
-
-use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
+use ReflectionProperty;
 use phpDocumentor\Reflection\TypeResolver;
 use phpDocumentor\Reflection\Types\Compound;
-use ReflectionProperty;
+use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
 
 class VarTypeResolver
 {
     protected $reflection;
 
     /** @var string[] List of recognized keywords and unto which Value Object they map */
-    private static $typeKeywords = array(
+    private static $typeKeywords = [
         'string',
         'int',
         'integer',
@@ -37,8 +35,8 @@ class VarTypeResolver
         '$this',
         'static',
         'parent',
-        'iterable'
-    );
+        'iterable',
+    ];
 
     /**
      * VarTypeResolver constructor.
@@ -72,6 +70,7 @@ class VarTypeResolver
             $types = [$resolvedTypes->__toString()];
         }
         $this->checkTypeExistence($types);
+
         return $types;
     }
 
@@ -80,6 +79,7 @@ class VarTypeResolver
         $directoriesAndFilename = explode('/', $fileName);
         $fileName = array_pop($directoriesAndFilename);
         $nameAndExtension = explode('.', $fileName);
+
         return array_shift($nameAndExtension);
     }
 
@@ -88,31 +88,32 @@ class VarTypeResolver
         $lines = file($filename);
         $namespace = preg_grep('/^namespace /', $lines);
         $namespaceLine = array_shift($namespace);
-        $match = array();
+        $match = [];
         preg_match('/^namespace (.*);$/', $namespaceLine, $match);
+
         return $fullNamespace = array_pop($match);
     }
 
     protected function getFqnFromFileName($fileName) :string
     {
-        return $this->getNamespaceFromFilename($fileName) . '\\' . $this->getClassFromFilename($fileName);
+        return $this->getNamespaceFromFilename($fileName).'\\'.$this->getClassFromFilename($fileName);
     }
 
     protected function checkTypeExistence(array $types)
     {
         foreach ($types as $type) {
-            $type = str_replace("[]", "", $type);
-            if (!in_array($type, self::$typeKeywords)) {
-                if (!$this->classExists($type))
+            $type = str_replace('[]', '', $type);
+            if (! in_array($type, self::$typeKeywords)) {
+                if (! $this->classExists($type)) {
                     throw new TypeDoesNotExistException(sprintf(
                         'The @var annotation on %s::%s contains a non existent class "%s". '
-                        . 'Did you maybe forget to add a "use" statement for this annotation?',
+                        .'Did you maybe forget to add a "use" statement for this annotation?',
                         $this->reflection->getDeclaringClass()->getName(),
                         $this->reflection->getName(),
                         $type
                     ));
+                }
             }
-
         }
     }
 
@@ -124,5 +125,4 @@ class VarTypeResolver
     {
         return class_exists($class) || interface_exists($class);
     }
-
 }
