@@ -172,7 +172,7 @@ class PostData extends DataTransferObject
     /**
      * @var string
      * @Assert\NotBlank()
-     * @Assert\Length(min = 3, max = 2)
+     * @Assert\Length(min = 3, max = 20)
      */
     public $name;
 }
