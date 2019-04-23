@@ -2,8 +2,6 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
-use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
-use phpDocumentor\Reflection\Types\Compound;
 use ReflectionProperty;
 use Larapie\DataTransferObject\PropertyType;
 
@@ -32,7 +30,7 @@ class PropertyTypeResolver
 
         $docComment = $this->reflection->getDocComment();
 
-        if (!$docComment) {
+        if (! $docComment) {
             $type->setNullable(true);
 
             return $type;
@@ -40,7 +38,7 @@ class PropertyTypeResolver
 
         preg_match('/\@var ((?:(?:[\w|\\\\])+(?:\[\])?)+)/', $docComment, $matches);
 
-        if (!count($matches)) {
+        if (! count($matches)) {
             $type->setNullable(true);
 
             return $type;
@@ -57,5 +55,4 @@ class PropertyTypeResolver
 
         return $type;
     }
-
 }

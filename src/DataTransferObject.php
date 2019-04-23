@@ -62,7 +62,7 @@ abstract class DataTransferObject implements DtoContract
 
     protected function setImmutable(): void
     {
-        if (!$this->isImmutable()) {
+        if (! $this->isImmutable()) {
             $this->immutable = true;
             foreach ($this->properties as $property) {
                 $this->chainPropertyImmutable($property);
@@ -96,7 +96,7 @@ abstract class DataTransferObject implements DtoContract
         if ($this->immutable) {
             throw new ImmutableDtoException($name);
         }
-        if (!isset($this->properties[$name])) {
+        if (! isset($this->properties[$name])) {
             throw new PropertyNotFoundDtoException($name, get_class($this));
         }
 
@@ -187,7 +187,7 @@ abstract class DataTransferObject implements DtoContract
         $array = [];
 
         if (count($this->onlyKeys)) {
-            $array = array_intersect_key($data, array_flip((array)$this->onlyKeys));
+            $array = array_intersect_key($data, array_flip((array) $this->onlyKeys));
         } else {
             foreach ($data as $key => $propertyValue) {
                 if (array_key_exists($key, $this->properties) && $this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
@@ -211,7 +211,7 @@ abstract class DataTransferObject implements DtoContract
                 continue;
             }
 
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 continue;
             }
 
@@ -246,8 +246,8 @@ abstract class DataTransferObject implements DtoContract
         $violations = [];
         foreach ($this->properties as $name => $property) {
             if (($value = $property->getValue()) instanceof DataTransferObject) {
-                $nestedViolations = $this->recursivelySortKeys($value->getViolations(),$name);
-                $violations = array_merge($violations,$nestedViolations);
+                $nestedViolations = $this->recursivelySortKeys($value->getViolations(), $name);
+                $violations = array_merge($violations, $nestedViolations);
             }
             $violationList = $property->getViolations();
             if ($violationList === null || $violationList->count() <= 0) {
@@ -255,13 +255,14 @@ abstract class DataTransferObject implements DtoContract
             }
             $violations[$name] = $violationList;
         }
+
         return $violations;
     }
 
     public function validate()
     {
         $violations = $this->getViolations();
-        if (!empty($violations)) {
+        if (! empty($violations)) {
             throw new ValidatorException($violations);
         }
     }
@@ -274,17 +275,18 @@ abstract class DataTransferObject implements DtoContract
                 if ($str == '') {
                     $this->recursivelySortKeys($val, $key);
                 } else {
-                    $this->recursivelySortKeys($val, $str . '.' . $key);
+                    $this->recursivelySortKeys($val, $str.'.'.$key);
                 }
             } else {
                 if ($str == '') {
                     $sortedArray[$key] = $val;
-                    echo $key . "\n";
+                    echo $key."\n";
                 } else {
-                    $sortedArray[$str . '.' . $key] = $val;
+                    $sortedArray[$str.'.'.$key] = $val;
                 }
             }
         }
+
         return $sortedArray;
     }
 }

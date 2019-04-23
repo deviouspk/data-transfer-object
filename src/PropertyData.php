@@ -9,8 +9,8 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Larapie\DataTransferObject\Annotations\Optional;
 use Larapie\DataTransferObject\Annotations\Immutable;
-use Larapie\DataTransferObject\Resolvers\PropertyTypeResolver;
 use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
+use Larapie\DataTransferObject\Resolvers\PropertyTypeResolver;
 
 class PropertyData
 {
