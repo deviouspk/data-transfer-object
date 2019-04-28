@@ -2,7 +2,8 @@
 
 namespace Larapie\DataTransferObject\Casters;
 
-use Larapie\DataTransferObject\PropertyType;
+use Larapie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\Property\PropertyType;
 use Larapie\DataTransferObject\Contracts\DtoContract;
 
 class TypeCaster
@@ -35,7 +36,7 @@ class TypeCaster
     protected function castDto($value)
     {
         foreach ($this->type->getTypes() as $type) {
-            if (is_subclass_of($type, DtoContract::class)) {
+            if (is_subclass_of($type, DataTransferObject::class)) {
                 if (is_array($value)) {
                     return new $type($value);
                 }
@@ -50,7 +51,7 @@ class TypeCaster
         $castTo = null;
 
         foreach ($this->type->getArrayTypes() as $type) {
-            if (! is_subclass_of($type, DtoContract::class)) {
+            if (! is_subclass_of($type, DataTransferObject::class)) {
                 continue;
             }
 

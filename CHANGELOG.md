@@ -2,6 +2,14 @@
 
 All notable changes to `data-transfer-object` will be documented in this file
 
+## 3.0.0 - 2019-04-23
+
+- Huge rewrite. Completed validation with symfony\validation through annotations. Improved caching.
+
+## 2.3.0 - 2019-04-23
+
+- Nested Validation
+
 ## 2.2.0 - 2019-04-19
 
 - Annotations for optional & immutable properties

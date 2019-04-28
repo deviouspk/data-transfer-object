@@ -2,10 +2,8 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
-use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
-use phpDocumentor\Reflection\Types\Compound;
 use ReflectionProperty;
-use Larapie\DataTransferObject\PropertyType;
+use Larapie\DataTransferObject\Property\PropertyType;
 
 class PropertyTypeResolver
 {

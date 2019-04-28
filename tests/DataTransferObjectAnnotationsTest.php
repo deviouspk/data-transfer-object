@@ -2,11 +2,21 @@
 
 namespace Larapie\DataTransferObject\Tests;
 
-use Larapie\DataTransferObject\Tests\TestClasses\OptionalPropertyDto;
 use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDtoWithOptionalProperty;
+use Larapie\DataTransferObject\Tests\TestClasses\OptionalPropertyDto;
 
-class OptionalDataTransferObjectTest extends TestCase
+class DataTransferObjectAnnotationsTest extends TestCase
 {
+    /** @test */
+    public function optional_property_input_is_not_required()
+    {
+        $dto = new OptionalPropertyDto([
+        ]);
+        $dto->validate();
+
+        $this->assertEmpty($dto->toArray());
+    }
+
     /** @test */
     public function optional_values_are_not_required()
     {
@@ -29,12 +39,13 @@ class OptionalDataTransferObjectTest extends TestCase
     }
 
     /** @test */
-    public function test_optional_annotation()
+    public function optional_annotation_property_can_be_inputted()
     {
         $dto = new OptionalPropertyDto([
             'name' => 'test',
         ]);
-        $dto->validate();
-        $this->assertTrue(true);
+        $this->assertEquals([
+            'name' => 'test',
+        ], $dto->toArray());
     }
 }

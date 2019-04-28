@@ -17,4 +17,6 @@ interface DtoContract
     public function toArray(): array;
 
     public function isImmutable(): bool;
+
+    public function setImmutable(bool $immutable): void ;
 }

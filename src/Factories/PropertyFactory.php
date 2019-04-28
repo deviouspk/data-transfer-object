@@ -4,7 +4,7 @@ namespace Larapie\DataTransferObject\Factories;
 
 use ReflectionClass;
 use ReflectionProperty;
-use Larapie\DataTransferObject\Property;
+use Larapie\DataTransferObject\Property\Property;
 use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\Contracts\AdditionalProperties;
 use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
@@ -96,11 +96,12 @@ class PropertyFactory
     {
         if (empty($parameters)) {
             return;
-        } elseif ($this instanceof WithAdditionalProperties) {
+        } elseif ($this->dto instanceof WithAdditionalProperties) {
             foreach ($parameters as $name => $parameter) {
                 $this->dto->with($name, $parameter);
             }
-        } elseif ($this instanceof AdditionalProperties) {
+            return;
+        } elseif ($this->dto instanceof AdditionalProperties) {
             return;
         }
         throw new UnknownPropertiesDtoException($parameters, $this->getDtoClass());

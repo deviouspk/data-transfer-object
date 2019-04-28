@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Larapie\DataTransferObject;
 
 use Larapie\DataTransferObject\Contracts\DtoContract;
+use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
 use Larapie\DataTransferObject\Factories\PropertyFactory;
-use Larapie\DataTransferObject\Contracts\AutomaticValidation;
 use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
-use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
+use Larapie\DataTransferObject\Property\Property;
 use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
 use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
 use Larapie\DataTransferObject\Exceptions\PropertyAlreadyExistsException;
@@ -31,6 +31,9 @@ abstract class DataTransferObject implements DtoContract
     /** @var bool */
     protected $immutable = false;
 
+    /** @var bool */
+    protected $validation = true;
+
     public function __construct(array $parameters)
     {
         $this->boot($parameters);
@@ -45,9 +48,6 @@ abstract class DataTransferObject implements DtoContract
     {
         $this->properties = (new PropertyFactory($this))->build($parameters);
         $this->determineImmutability();
-        if ($this instanceof AutomaticValidation) {
-            $this->validate();
-        }
     }
 
     protected function determineImmutability()
@@ -55,30 +55,34 @@ abstract class DataTransferObject implements DtoContract
         /* If the dto itself is not immutable but some properties are chain them immutable  */
         foreach ($this->properties as $property) {
             if ($property->isImmutable()) {
-                $this->chainPropertyImmutable($property);
+                $this->chainPropertyImmutable($property, true);
             }
         }
     }
 
-    protected function setImmutable(): void
+    public function setImmutable(bool $immutable): void
     {
-        if (!$this->isImmutable()) {
-            $this->immutable = true;
-            foreach ($this->properties as $property) {
-                $this->chainPropertyImmutable($property);
+        if ($immutable) {
+            if (!$this->isImmutable()) {
+                $this->immutable = true;
+                foreach ($this->properties as $property) {
+                    $this->chainPropertyImmutable($property, true);
+                }
             }
-        }
+        } else
+            $this->immutable = true;
+
     }
 
-    protected function chainPropertyImmutable(Property $property)
+    protected function chainPropertyImmutable(Property $property, bool $immutable)
     {
         $dto = $property->getValue();
         if ($dto instanceof DataTransferObject) {
-            $dto->setImmutable();
+            $dto->setImmutable($immutable);
         } elseif (is_iterable($dto)) {
             foreach ($dto as $aPotentialDto) {
                 if ($aPotentialDto instanceof DataTransferObject) {
-                    $aPotentialDto->setImmutable();
+                    $aPotentialDto->setImmutable($immutable);
                 }
             }
         }
@@ -106,8 +110,34 @@ abstract class DataTransferObject implements DtoContract
         $this->$name = $value;
     }
 
+    protected function propertyExists(string $propertyName)
+    {
+        return array_key_exists($propertyName, $this->properties);
+    }
+
     public function &__get($name)
     {
+        if (!$this->propertyExists($name)) {
+            if ($this instanceof WithAdditionalProperties) {
+                if (array_key_exists($name, $this->with)) {
+                    if ($this->isImmutable()) {
+                        $value = $this->with[$name];
+                        return $value;
+                    }
+                    return $this->with[$name];
+                }
+                throw new PropertyNotFoundDtoException($name, static::class);
+            }
+        }
+        $property = $this->properties[$name];
+        $violations = $property->getViolations();
+        if ($violations->count() > 0) {
+            throw new ValidatorException([$name => $violations]);
+        }
+        if ($this->isImmutable()) {
+            $value = $this->properties[$name]->getValue();
+            return $value;
+        }
         return $this->properties[$name]->value;
     }
 
@@ -116,13 +146,30 @@ abstract class DataTransferObject implements DtoContract
         return $this->immutable;
     }
 
+    public function isValid(){
+        return empty($this->getValidationViolations());
+    }
+
+    public function validationEnabled()
+    {
+        return $this->validation;
+    }
+
+    public function setValidation(bool $validate)
+    {
+        $this->validation = $validate;
+    }
+
     public function all(): array
     {
         $data = [];
 
+        if ($this->validation) {
+            $this->validate();
+        }
+
         foreach ($this->properties as $property) {
-            $value = $property->getValue();
-            $data[$property->getName()] = $value instanceof DtoContract ? $value->toArray() : $value;
+            $data[$property->getName()] = ($value = $property->getValue()) instanceof DataTransferObject ? $value->toArray() : $value;
         }
 
         return array_merge($data, $this->with);
@@ -171,7 +218,7 @@ abstract class DataTransferObject implements DtoContract
         if ($propertyExists) {
             $property = $this->properties[$key];
             $property->set($value);
-            if ($this instanceof AutomaticValidation) {
+            if ($this->validation) {
                 $this->validate();
             }
         } else {
@@ -190,7 +237,7 @@ abstract class DataTransferObject implements DtoContract
             $array = array_intersect_key($data, array_flip((array)$this->onlyKeys));
         } else {
             foreach ($data as $key => $propertyValue) {
-                if (array_key_exists($key, $this->properties) && $this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized()) {
+                if (array_key_exists($key, $this->with) || (array_key_exists($key, $this->properties) && $this->properties[$key]->isVisible() && $this->properties[$key]->isInitialized())) {
                     $array[$key] = $propertyValue;
                 }
             }
@@ -221,33 +268,22 @@ abstract class DataTransferObject implements DtoContract
         return $array;
     }
 
-    public function throwValidationException()
-    {
-        $violations = [];
-        foreach ($this->properties as $propertyName => $property) {
-            $violationList = $property->getViolations();
-
-            if ($violationList === null || $violationList->count() <= 0) {
-                continue;
-            }
-            foreach ($violationList as $violation) {
-                if ($violation instanceof PropertyRequiredViolation) {
-                    $violations[$propertyName] = [$violation];
-                    break;
-                }
-                $violations[$propertyName][] = $violation;
-            }
-        }
-        throw new ValidatorException($violations);
-    }
-
-    protected function getViolations()
+    public function getValidationViolations()
     {
         $violations = [];
         foreach ($this->properties as $name => $property) {
-            if (($value = $property->getValue()) instanceof DataTransferObject) {
-                $nestedViolations = $this->recursivelySortKeys($value->getViolations(),$name);
-                $violations = array_merge($violations,$nestedViolations);
+            $value = $property->getValue();
+            if ($value instanceof DataTransferObject) {
+                $nestedViolations = $this->recursivelySortKeys($value->getValidationViolations(), $name);
+                $violations = array_merge($violations, $nestedViolations);
+            }
+            if(is_iterable($value)){
+                foreach($value as $key => $potentialDto){
+                    if ($potentialDto instanceof DataTransferObject) {
+                        $nestedViolations = $this->recursivelySortKeys($potentialDto->getValidationViolations(), "$name.$key");
+                        $violations = array_merge($violations, $nestedViolations);
+                    }
+                }
             }
             $violationList = $property->getViolations();
             if ($violationList === null || $violationList->count() <= 0) {
@@ -260,7 +296,7 @@ abstract class DataTransferObject implements DtoContract
 
     public function validate()
     {
-        $violations = $this->getViolations();
+        $violations = $this->getValidationViolations();
         if (!empty($violations)) {
             throw new ValidatorException($violations);
         }

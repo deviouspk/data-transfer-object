@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests;
 
+use Larapie\DataTransferObject\Contracts\AdditionalProperties;
+use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
 use Larapie\DataTransferObject\DataTransferObject;
 use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
 use Larapie\DataTransferObject\Traits\MakeImmutable;
@@ -555,5 +557,38 @@ class DataTransferObjectTest extends TestCase
         $dto->array[] = 'abc';
 
         $this->assertEquals($dto->array, ['abc']);
+    }
+
+    /** @test */
+    public function additional_properties_throws_exception()
+    {
+        $this->expectException(UnknownPropertiesDtoException::class);
+        $dto = new class(["name" => "foo"]) extends DataTransferObject
+        {
+        };
+
+        $this->assertEmpty($dto->toArray());
+    }
+
+    /** @test */
+    public function additional_property_dto_does_not_throw_exception()
+    {
+        $dto = new class(["name" => "foo"]) extends DataTransferObject implements AdditionalProperties
+        {
+        };
+
+        $this->assertEmpty($dto->toArray());
+    }
+
+    /** @test */
+    public function with_additional_property_dto_works()
+    {
+        $dto = new class(["name" => "foo"]) extends DataTransferObject implements WithAdditionalProperties
+        {
+        };
+
+        $this->assertEquals("foo", $dto->name);
+
+        $this->assertEquals($dto->toArray(), ["name" => "foo"]);
     }
 }

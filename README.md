@@ -172,7 +172,7 @@ class PostData extends DataTransferObject
     /**
      * @var string
      * @Assert\NotBlank()
-     * @Assert\Length(min = 3, max = 2)
+     * @Assert\Length(min = 3, max = 20)
      */
     public $name;
 }
@@ -194,6 +194,47 @@ class PostData extends DataTransferObject
      */
     public $name;
 }
+```
+
+### Additional Properties
+
+By default only dto properties can be set on the dto. Attempting to input data that is not declared as a public property on the dto will throw a `UnknownPropertiesDtoException`.
+If you want to allow additional properties you can do so by implementing the `AdditionalProperties` or `WithAdditionalProperties` interface.
+
+AdditionalProperties:
+
+```php
+class PostData extends DataTransferObject implements AdditionalProperties
+{
+    /**
+     * @var string $name
+     */
+    public $name;
+}
+
+$dto = new PostData(["name" => "foo", "address" => "bar"]);
+$dto->toArray();
+
+returns:
+["name" => "foo"]
+```
+
+WithAdditionalProperties:
+
+```php
+class PostData extends DataTransferObject implements WithAdditionalProperties
+{
+    /**
+     * @var string $name
+     */
+    public $name;
+}
+
+$dto = new PostData(["name" => "foo", "address" => "bar"]);
+$dto->toArray();
+
+returns:
+["name" => "foo", "address" => "bar"]
 ```
 
 ### Overriding & Adding Properties
@@ -387,10 +428,10 @@ It's important to note that `except` and `only` are immutable, they won't change
 ### Exception handling
 
 Beside property type validation, you can also be certain that the data transfer object in its whole is always valid.
-On constructing a data transfer object, we'll validate whether all required (non-nullable) properties are set. 
-If not, a `Spatie\DataTransferObject\DataTransferObjectError` will be thrown.
+On outputting the data from a data transfer object (through the `all()` & `toArray()` methods and also when you access the properties of the dto e.g. `$dto->name`) , we'll validate whether all required properties are set, if the constraints are met and if each property is of the correct type. 
+If not, a `Larapie\DataTransferObject\Exceptions\ValidatorException` will be thrown.
 
-Likewise, if you're trying to set non-defined properties, you'll get a `DataTransferObjectError`.
+Likewise, if you're trying to set non-defined properties, you'll get a `Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException`.
 
 ### Testing
 

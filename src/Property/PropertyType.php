@@ -1,6 +1,6 @@
 <?php
 
-namespace Larapie\DataTransferObject;
+namespace Larapie\DataTransferObject\Property;
 
 class PropertyType
 {
