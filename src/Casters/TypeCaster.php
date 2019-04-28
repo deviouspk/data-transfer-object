@@ -4,7 +4,6 @@ namespace Larapie\DataTransferObject\Casters;
 
 use Larapie\DataTransferObject\DataTransferObject;
 use Larapie\DataTransferObject\Property\PropertyType;
-use Larapie\DataTransferObject\Contracts\DtoContract;
 
 class TypeCaster
 {

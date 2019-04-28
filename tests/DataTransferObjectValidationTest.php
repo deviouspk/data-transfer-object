@@ -2,11 +2,10 @@
 
 namespace Larapie\DataTransferObject\Tests;
 
-use Larapie\DataTransferObject\Contracts\DisableValidation;
 use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
-use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
 use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
+use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
 
 class DataTransferObjectValidationTest extends TestCase
 {
@@ -23,8 +22,7 @@ class DataTransferObjectValidationTest extends TestCase
     /** @test */
     public function test_disable_validation()
     {
-        $dto = new class([]) extends ValidateablePropertyDto
-        {
+        $dto = new class([]) extends ValidateablePropertyDto {
         };
         $dto->setValidation(false);
         $this->assertEmpty($dto->toArray());
@@ -34,19 +32,19 @@ class DataTransferObjectValidationTest extends TestCase
     public function valid_nested_validation_works()
     {
         $dto = new NestedParent([
-            "name" => "foo",
-            "child" => [
-                "name" => "bar"
-            ]
+            'name' => 'foo',
+            'child' => [
+                'name' => 'bar',
+            ],
         ]);
 
         $dto->validate();
 
         $this->assertEquals($dto->toArray(), [
-            "name" => "foo",
-            "child" => [
-                "name" => "bar"
-            ]
+            'name' => 'foo',
+            'child' => [
+                'name' => 'bar',
+            ],
         ]);
     }
 
@@ -54,10 +52,10 @@ class DataTransferObjectValidationTest extends TestCase
     public function invalid_nested_validation_throws_exception()
     {
         $dto = new NestedParent([
-            "name" => "foo",
-            "child" => [
+            'name' => 'foo',
+            'child' => [
 
-            ]
+            ],
         ]);
 
         $this->assertThrows(ValidatorException::class,

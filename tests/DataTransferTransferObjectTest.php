@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Tests;
 
-use Larapie\DataTransferObject\Contracts\AdditionalProperties;
-use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
 use Larapie\DataTransferObject\DataTransferObject;
 use Larapie\DataTransferObject\Traits\MakeImmutable;
 use Larapie\DataTransferObject\Annotations\Immutable;
@@ -14,8 +12,10 @@ use Larapie\DataTransferObject\Tests\TestClasses\EmptyChild;
 use Larapie\DataTransferObject\Tests\TestClasses\OtherClass;
 use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedChild;
+use Larapie\DataTransferObject\Contracts\AdditionalProperties;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
+use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
 use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany;
 use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
@@ -528,8 +528,7 @@ class DataTransferObjectTest extends TestCase
     public function additional_properties_throws_exception()
     {
         $this->expectException(UnknownPropertiesDtoException::class);
-        $dto = new class(["name" => "foo"]) extends DataTransferObject
-        {
+        $dto = new class(['name' => 'foo']) extends DataTransferObject {
         };
 
         $this->assertEmpty($dto->toArray());
@@ -538,8 +537,7 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function additional_property_dto_does_not_throw_exception()
     {
-        $dto = new class(["name" => "foo"]) extends DataTransferObject implements AdditionalProperties
-        {
+        $dto = new class(['name' => 'foo']) extends DataTransferObject implements AdditionalProperties {
         };
 
         $this->assertEmpty($dto->toArray());
@@ -548,12 +546,11 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function with_additional_property_dto_works()
     {
-        $dto = new class(["name" => "foo"]) extends DataTransferObject implements WithAdditionalProperties
-        {
+        $dto = new class(['name' => 'foo']) extends DataTransferObject implements WithAdditionalProperties {
         };
 
-        $this->assertEquals("foo", $dto->name);
+        $this->assertEquals('foo', $dto->name);
 
-        $this->assertEquals($dto->toArray(), ["name" => "foo"]);
+        $this->assertEquals($dto->toArray(), ['name' => 'foo']);
     }
 }

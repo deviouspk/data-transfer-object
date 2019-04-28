@@ -100,6 +100,7 @@ class PropertyFactory
             foreach ($parameters as $name => $parameter) {
                 $this->dto->with($name, $parameter);
             }
+
             return;
         } elseif ($this->dto instanceof AdditionalProperties) {
             return;
