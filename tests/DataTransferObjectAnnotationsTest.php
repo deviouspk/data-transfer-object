@@ -2,8 +2,8 @@
 
 namespace Larapie\DataTransferObject\Tests;
 
-use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDtoWithOptionalProperty;
 use Larapie\DataTransferObject\Tests\TestClasses\OptionalPropertyDto;
+use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDtoWithOptionalProperty;
 
 class DataTransferObjectAnnotationsTest extends TestCase
 {

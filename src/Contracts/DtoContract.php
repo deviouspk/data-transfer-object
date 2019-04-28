@@ -18,5 +18,5 @@ interface DtoContract
 
     public function isImmutable(): bool;
 
-    public function setImmutable(bool $immutable): void ;
+    public function setImmutable(bool $immutable): void;
 }

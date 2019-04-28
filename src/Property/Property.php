@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Property;
 
-use Larapie\DataTransferObject\DataTransferObject;
 use ReflectionProperty;
 use Symfony\Component\Validator\ValidatorBuilder;
 use Larapie\DataTransferObject\Casters\TypeCaster;
+use Larapie\DataTransferObject\DataTransferObject;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
@@ -48,7 +48,7 @@ class Property
     protected function initViolations()
     {
         $this->setViolations(new ConstraintViolationList());
-        if (!$this->data->isOptional()) {
+        if (! $this->data->isOptional()) {
             $this->violations->add(new PropertyRequiredViolation());
         }
     }
@@ -61,20 +61,22 @@ class Property
         $this->setViolations($this->validate($value));
     }
 
-    protected function disableAutoValidation($value){
-        if(is_iterable($value)){
+    protected function disableAutoValidation($value)
+    {
+        if (is_iterable($value)) {
             $values = [];
-            foreach($value as $potentialDto){
-                if($potentialDto instanceof DataTransferObject){
+            foreach ($value as $potentialDto) {
+                if ($potentialDto instanceof DataTransferObject) {
                     $potentialDto->setValidation(false);
                     $values[] = $potentialDto;
                 }
             }
+
             return $values;
-        }
-        elseif ($value instanceof DataTransferObject){
+        } elseif ($value instanceof DataTransferObject) {
             $value->setValidation(false);
         }
+
         return $value;
     }
 
@@ -96,10 +98,10 @@ class Property
 
         $violations = (new ValidatorBuilder())->getValidator()->validate($value, $constraints);
 
-        if (!$this->isInitialized() && !$this->data->isOptional()) {
+        if (! $this->isInitialized() && ! $this->data->isOptional()) {
             $violations->add(new PropertyRequiredViolation());
         }
-        if (!$this->data->getType()->isValid($value)) {
+        if (! $this->data->getType()->isValid($value)) {
             $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
         }
 

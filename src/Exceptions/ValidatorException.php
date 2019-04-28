@@ -21,13 +21,13 @@ class ValidatorException extends \Symfony\Component\Validator\Exception\Validato
     {
         $message = '';
         foreach ($violations as $propertyName => $propertyViolations) {
-            if (!empty($propertyViolations)) {
-                $message = $message . "Exception on property '" . $propertyName . "': ";
+            if (! empty($propertyViolations)) {
+                $message = $message."Exception on property '".$propertyName."': ";
             }
             foreach ($propertyViolations as $violation) {
-                $message = $message . $violation->getMessage() . '.';
+                $message = $message.$violation->getMessage().'.';
             }
-            $message = $message . "\n";
+            $message = $message."\n";
         }
 
         return $message;
