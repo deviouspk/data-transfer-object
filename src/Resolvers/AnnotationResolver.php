@@ -2,10 +2,10 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
+use ReflectionProperty;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
-use ReflectionProperty;
 
 class AnnotationResolver
 {

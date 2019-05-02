@@ -2,7 +2,6 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-
 use RuntimeException;
 
 class UnknownPropertiesDtoException extends RuntimeException

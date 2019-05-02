@@ -2,13 +2,13 @@
 
 namespace Larapie\DataTransferObject\Factories;
 
-use Larapie\DataTransferObject\Contracts\AdditionalProperties;
-use Larapie\DataTransferObject\Contracts\DtoContract;
-use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
-use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
-use Larapie\DataTransferObject\Property\Property;
 use ReflectionClass;
 use ReflectionProperty;
+use Larapie\DataTransferObject\Property\Property;
+use Larapie\DataTransferObject\Contracts\DtoContract;
+use Larapie\DataTransferObject\Contracts\AdditionalProperties;
+use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
+use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
 
 class PropertyFactory
 {
@@ -70,11 +70,13 @@ class PropertyFactory
             }
 
             //If property is immutable make sure all nested values are also immutable
-            if ($property->isImmutable())
+            if ($property->isImmutable()) {
                 $property->chainImmutable(true);
+            }
 
             $properties[$reflectionProperty->getName()] = $property;
         }
+
         return $properties;
     }
 
@@ -85,7 +87,7 @@ class PropertyFactory
 
     protected function getProperties(): array
     {
-        if (!$this->dtoIsCached()) {
+        if (! $this->dtoIsCached()) {
             $properties = $this->buildProperties();
 
             self::$cache[$this->getDtoClass()] = $properties;

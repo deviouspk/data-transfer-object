@@ -6,7 +6,6 @@ use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
 
 class DataTransferObjectBenchmarkTest extends TestCase
 {
-
     /** @test */
     public function benchmark_nested_validation()
     {
@@ -22,10 +21,8 @@ class DataTransferObjectBenchmarkTest extends TestCase
             $dto->validate();
         }
 
-        echo "Benchmark took: " . round($time_elapsed_secs = microtime(true) - $start, 2) . " sec";
+        echo 'Benchmark took: '.round($time_elapsed_secs = microtime(true) - $start, 2).' sec';
 
         $this->assertTrue(true);
     }
-
-
 }

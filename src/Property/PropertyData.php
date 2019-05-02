@@ -2,15 +2,15 @@
 
 namespace Larapie\DataTransferObject\Property;
 
+use ReflectionProperty;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
-use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Annotations\Optional;
+use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
 use Larapie\DataTransferObject\Resolvers\ConstraintsResolver;
 use Larapie\DataTransferObject\Resolvers\PropertyTypeResolver;
-use ReflectionProperty;
 
 class PropertyData
 {
@@ -165,6 +165,4 @@ class PropertyData
     {
         return $this->annotations;
     }
-
-
 }
