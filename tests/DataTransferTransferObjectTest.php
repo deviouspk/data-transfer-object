@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapie\DataTransferObject\Tests;
 
 use Larapie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\Tests\TestClasses\DefaultValueDto;
 use Larapie\DataTransferObject\Traits\MakeImmutable;
 use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Tests\TestClasses\DummyClass;
@@ -93,13 +94,12 @@ class DataTransferObjectTest extends TestCase
     /** @test */
     public function default_values_are_supported()
     {
-        $valueObject = new class(['bar' => true]) extends DataTransferObject {
-            /** @var string */
-            public $foo = 'abc';
+        //DOUBLE DECLARED BECAUSE OF HISTORY WITH BUGS RELATED TO DEFAULT VALUES WITH CACHING
+        $valueObject = new DefaultValueDto(['bar' => true]);
+        $valueObject->validate();
 
-            /** @var bool */
-            public $bar;
-        };
+        $valueObject = new DefaultValueDto(['bar' => true]);
+        $valueObject->validate();
 
         $this->assertEquals(['foo' => 'abc', 'bar' => true], $valueObject->all());
     }

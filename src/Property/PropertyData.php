@@ -38,13 +38,13 @@ class PropertyData
      */
     public function __construct(ReflectionProperty $property)
     {
-        $this->name = $property->getName();
-        $this->fqn = "{$property->getDeclaringClass()->getName()}::{$property->getName()}";
         $this->boot($property);
     }
 
     protected function boot(reflectionProperty $reflectionProperty)
     {
+        $this->name = $reflectionProperty->getName();
+        $this->fqn = "{$reflectionProperty->getDeclaringClass()->getName()}::{$reflectionProperty->getName()}";
         $this->annotations = $this->resolveAnnotations($reflectionProperty);
         $this->constraints = $this->resolveConstraints($reflectionProperty);
         $this->type = $this->resolveType($reflectionProperty);

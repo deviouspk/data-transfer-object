@@ -21,6 +21,9 @@ class Property
     /** @var mixed */
     public $value;
 
+    /** @var mixed */
+    protected $default;
+
     /** @var bool */
     protected $initialized = false;
 
@@ -48,7 +51,7 @@ class Property
     protected function initViolations()
     {
         $this->setViolations(new ConstraintViolationList());
-        if (! $this->data->isOptional()) {
+        if (!$this->data->isOptional()) {
             $this->violations->add(new PropertyRequiredViolation());
         }
     }
@@ -85,6 +88,9 @@ class Property
         $this->value = null;
         $this->initialized = false;
         $this->initViolations();
+
+        if ($this->default !== null)
+            $this->set($this->default);
     }
 
     public function isInitialized()
@@ -98,11 +104,11 @@ class Property
 
         $violations = (new ValidatorBuilder())->getValidator()->validate($value, $constraints);
 
-        if (! $this->isInitialized() && ! $this->data->isOptional()) {
+        if (!$this->isInitialized() && !$this->data->isOptional()) {
             $violations->add(new PropertyRequiredViolation());
         }
 
-        if (! $this->data->getType()->isValid($value)) {
+        if (!$this->data->getType()->isValid($value)) {
             $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
         }
 
@@ -156,6 +162,22 @@ class Property
     public function setVisible(bool $visible): void
     {
         $this->visible = $visible;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $default
+     */
+    public function setDefault($default): void
+    {
+        $this->default = $default;
     }
 
     public function chainImmutable($immutable)

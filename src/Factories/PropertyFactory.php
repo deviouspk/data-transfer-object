@@ -65,9 +65,9 @@ class PropertyFactory
             $property = new Property($reflectionProperty);
 
             //Set default value
-            if (($default = $reflectionProperty->getValue($this->dto)) !== null) {
-                $property->set($reflectionProperty->getValue($this->dto));
-            }
+            $property->setDefault($default = $reflectionProperty->getValue($this->dto));
+            if($default !== null)
+                $property->set($default);
 
             //If property is immutable make sure all nested values are also immutable
             if ($property->isImmutable()) {
