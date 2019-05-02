@@ -4,7 +4,6 @@ namespace Larapie\DataTransferObject\Resolvers;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
 use ReflectionProperty;
 
 class AnnotationResolver
@@ -26,7 +25,7 @@ class AnnotationResolver
         $this->reflection = $reflection;
     }
 
-    public function resolve() : array
+    public function resolve(): array
     {
         $annotations = [];
         foreach (self::getReader()->getPropertyAnnotations($this->reflection) as $annotation) {
@@ -36,16 +35,22 @@ class AnnotationResolver
         return $annotations;
     }
 
-    public static function setReader(Reader $reader)
+    public static function setReader()
     {
-        AnnotationRegistry::registerUniqueLoader('class_exists');
-        self::$reader = $reader;
+        //IMPLEMENTED LIKE THIS TO SUPPORT DOCTRINE\ANNOTATIONS v1.* & v2.*
+
+        if (class_exists(AnnotationRegistry::class)) {
+            AnnotationRegistry::registerUniqueLoader('class_exists');
+            self::$reader = new AnnotationReader();
+        } else {
+            self::$reader = new \Doctrine\Annotations\AnnotationReader();
+        }
     }
 
-    protected static function getReader(): Reader
+    protected static function getReader()
     {
         if (self::$reader === null) {
-            self::setReader(new AnnotationReader());
+            self::setReader();
         }
 
         return self::$reader;

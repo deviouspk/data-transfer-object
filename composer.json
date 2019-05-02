@@ -28,7 +28,7 @@
     ],
     "require": {
         "php": "^7.1",
-        "doctrine/annotations": "1.*",
+        "doctrine/annotations": "1.*|2.*",
         "symfony/validator": "^4.2"
     },
     "require-dev": {
@@ -53,5 +53,7 @@
     },
     "config": {
         "sort-packages": true
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

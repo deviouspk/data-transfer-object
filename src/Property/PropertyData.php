@@ -2,9 +2,6 @@
 
 namespace Larapie\DataTransferObject\Property;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Annotations\Reader;
 use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Annotations\Optional;
 use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
@@ -35,9 +32,6 @@ class PropertyData
     /** @var array */
     protected $annotations;
 
-    /** @var Reader */
-    private static $reader;
-
     /**
      * PropertyData constructor.
      * @param ReflectionProperty $property
@@ -65,11 +59,6 @@ class PropertyData
 
     protected function resolveAnnotations(ReflectionProperty $reflection)
     {
-        $annotations = [];
-        foreach (self::getReader()->getPropertyAnnotations($reflection) as $annotation) {
-            $annotations[] = $annotation;
-        }
-
         return (new AnnotationResolver($reflection))->resolve();
     }
 
@@ -98,16 +87,6 @@ class PropertyData
     protected function resolveConstraints(ReflectionProperty $reflection)
     {
         return (new ConstraintsResolver($reflection, $this->annotations))->resolve();
-    }
-
-    protected static function getReader()
-    {
-        AnnotationRegistry::registerUniqueLoader('class_exists');
-        if (! isset(self::$reader)) {
-            self::$reader = new AnnotationReader();
-        }
-
-        return self::$reader;
     }
 
     /**
