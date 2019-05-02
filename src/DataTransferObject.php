@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
-use ReflectionException;
-use Larapie\DataTransferObject\Property\Property;
 use Larapie\DataTransferObject\Contracts\DtoContract;
-use Larapie\DataTransferObject\Factories\PropertyFactory;
-use Larapie\DataTransferObject\Exceptions\ValidatorException;
-use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
 use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
-use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
+use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
 use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
 use Larapie\DataTransferObject\Exceptions\PropertyAlreadyExistsException;
+use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
+use Larapie\DataTransferObject\Exceptions\ValidatorException;
+use Larapie\DataTransferObject\Factories\PropertyFactory;
+use Larapie\DataTransferObject\Property\Property;
+use ReflectionException;
 
 /**
  * Class DataTransferObject.
@@ -33,7 +33,7 @@ abstract class DataTransferObject implements DtoContract
     protected $immutable = false;
 
     /** @var bool */
-    protected $validation = true;
+    protected $validate = true;
 
     public function __construct(array $parameters)
     {
@@ -98,8 +98,7 @@ abstract class DataTransferObject implements DtoContract
                 if (array_key_exists($name, $this->with)) {
                     if ($this->isImmutable()) {
                         $value = $this->with[$name];
-
-                        return $value;
+                        return clone $value;
                     }
 
                     return $this->with[$name];
@@ -133,24 +132,24 @@ abstract class DataTransferObject implements DtoContract
 
     public function validationEnabled()
     {
-        return $this->validation;
+        return $this->validate;
     }
 
     public function enableValidation()
     {
-        $this->validation = true;
+        $this->validate = true;
     }
 
     public function disableValidation()
     {
-        $this->validation = false;
+        $this->validate = false;
     }
 
     public function all(): array
     {
         $data = [];
 
-        if ($this->validation) {
+        if ($this->validate) {
             $this->validate();
         }
 
@@ -204,7 +203,7 @@ abstract class DataTransferObject implements DtoContract
         if ($propertyExists) {
             $property = $this->properties[$key];
             $property->set($value);
-            if ($this->validation) {
+            if ($this->validate) {
                 $this->validate();
             }
         } else {
