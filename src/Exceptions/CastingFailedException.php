@@ -2,8 +2,8 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use Larapie\DataTransferObject\Contracts\PropertyContract;
 use RuntimeException;
+use Larapie\DataTransferObject\Contracts\PropertyContract;
 
 class CastingFailedException extends RuntimeException
 {

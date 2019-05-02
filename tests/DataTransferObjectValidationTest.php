@@ -4,9 +4,9 @@ namespace Larapie\DataTransferObject\Tests;
 
 use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
-use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
-use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
 use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
+use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
+use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
 
 class DataTransferObjectValidationTest extends TestCase
 {

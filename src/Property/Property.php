@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Property;
 
+use ReflectionProperty;
+use Symfony\Component\Validator\ValidatorBuilder;
 use Larapie\DataTransferObject\Casters\TypeCaster;
 use Larapie\DataTransferObject\DataTransferObject;
-use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
-use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
-use ReflectionProperty;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\ValidatorBuilder;
+use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
+use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
 
 class Property
 {
@@ -101,7 +101,6 @@ class Property
         if (! $this->isInitialized() && ! $this->data->isOptional()) {
             $violations->add(new PropertyRequiredViolation());
         }
-
 
         if (! $this->data->getType()->isValid($value)) {
             $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
