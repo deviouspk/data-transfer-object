@@ -2,6 +2,14 @@
 
 All notable changes to `data-transfer-object` will be documented in this file
 
+## 3.1.2 - 2019-05-01
+
+- Fixed a bug that would cause non optional properties that have a default value to be required. (bug was caused by caching & the property reset mechanism)
+
+## 3.1.1 - 2019-05-01
+
+- Fixed a bug that could cause mutability of a property on an immutable dto
+
 ## 3.1.0 - 2019-05-01
 
 - Constraint Inheritance. Cleaned up code.
