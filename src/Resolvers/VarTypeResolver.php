@@ -2,11 +2,11 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
-use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
+use ReflectionProperty;
 use phpDocumentor\Reflection\TypeResolver;
 use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\ContextFactory;
-use ReflectionProperty;
+use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
 
 class VarTypeResolver
 {
