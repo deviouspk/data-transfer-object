@@ -51,7 +51,7 @@ class Property
     protected function initViolations()
     {
         $this->setViolations(new ConstraintViolationList());
-        if (!$this->data->isOptional()) {
+        if (! $this->data->isOptional()) {
             $this->violations->add(new PropertyRequiredViolation());
         }
     }
@@ -89,8 +89,9 @@ class Property
         $this->initialized = false;
         $this->initViolations();
 
-        if ($this->default !== null)
+        if ($this->default !== null) {
             $this->set($this->default);
+        }
     }
 
     public function isInitialized()
@@ -104,11 +105,11 @@ class Property
 
         $violations = (new ValidatorBuilder())->getValidator()->validate($value, $constraints);
 
-        if (!$this->isInitialized() && !$this->data->isOptional()) {
+        if (! $this->isInitialized() && ! $this->data->isOptional()) {
             $violations->add(new PropertyRequiredViolation());
         }
 
-        if (!$this->data->getType()->isValid($value)) {
+        if (! $this->data->getType()->isValid($value)) {
             $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
         }
 
