@@ -2,10 +2,11 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
-use ReflectionProperty;
+use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
 use phpDocumentor\Reflection\TypeResolver;
 use phpDocumentor\Reflection\Types\Compound;
-use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
+use phpDocumentor\Reflection\Types\ContextFactory;
+use ReflectionProperty;
 
 class VarTypeResolver
 {
@@ -49,13 +50,11 @@ class VarTypeResolver
 
     public function resolve(string $varDocComment) :array
     {
+        $contextFactory = new ContextFactory();
         if ($this->reflection->getDeclaringClass()->isAnonymous()) {
             $filename = $this->reflection->getDeclaringClass()->getFileName();
-
-            $contextFactory = new \phpDocumentor\Reflection\Types\ContextFactory();
             $context = $contextFactory->createForNamespace($this->getNamespaceFromFilename($filename), file_get_contents($filename));
         } else {
-            $contextFactory = new \phpDocumentor\Reflection\Types\ContextFactory();
             $context = $contextFactory->createFromReflector($this->reflection);
         }
 
