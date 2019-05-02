@@ -162,25 +162,6 @@ class PostData extends DataTransferObject
 ```
 When PHP 7.4 introduces typed properties, you'll be able to simply remove the doc blocks and type the properties with the new, built-in syntax.
 
-### Validating Properties
-
-If you want to validate the input of a property. You can do so with annotations.
-
-```php
-class PostData extends DataTransferObject
-{
-    /**
-     * @var string
-     * @Assert\NotBlank()
-     * @Assert\Length(min = 3, max = 20)
-     */
-    public $name;
-}
-```
-
-To support this functionality the excellent `symfony\validation` library was used. 
-For more info please checkout https://symfony.com/doc/current/validation.html
-
 ### Optional Properties
 
 By default all dto properties are required. If you want to make certain properties on the dto optional:
@@ -195,6 +176,9 @@ class PostData extends DataTransferObject
     public $name;
 }
 ```
+
+###### Note
+The default value will NOT be set when a property is annotated as optional!
 
 ### Additional Properties
 
@@ -267,6 +251,43 @@ Overriding Property:
 - You cannot add or override data on an immutable dto. You also can't override immutable properties.
 
 - You cannot use the with method to add properties that are declared as public properties on the dto.
+
+### Validation
+
+##### Constraints
+If you want to validate the input of a property. You can do so with annotations through symfony constraints.
+```php
+class PostData extends DataTransferObject
+{
+    /**
+     * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(min = 3, max = 20)
+     */
+    public $name;
+}
+```
+
+##### Constraint Inheritence
+If you want to extend a dto and add extra constraints or the optional annotation you can do so by adding the `Inherit` annotation.
+This will merge all existing constraints from the parent class. If no type is specified on the current class it will also inherit the type of the parent dto.
+```php
+class UpdatePostData extends PostData
+{
+    /**
+     * @Optional
+     * @Inherit
+     */
+    public $name;
+}
+```
+
+###### Notes
+- The `Optional` annotation will not be inherited from the parent class. This is to ensure you always have a clear overview of what values are required in a dto.
+- Validation is done upon accessing variables through the magic __get method `$dto->property` or when outputting the values of the array through the `toArray()` or `all()` methods. You can also call the `validat()` method manually. If the dto is not valid it will throw a `ValidatorException`.
+
+To implement this functionality the excellent `symfony\validation` library was used. 
+For more info please checkout https://symfony.com/doc/current/validation.html
 
 
 ### Working with collections

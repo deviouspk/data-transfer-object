@@ -2,9 +2,9 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use TypeError;
+use RuntimeException;
 
-class PropertyNotFoundDtoException extends TypeError
+class PropertyNotFoundDtoException extends RuntimeException
 {
     public function __construct(string $property, string $className)
     {

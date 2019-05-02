@@ -1,13 +1,14 @@
 {
     "name": "larapie/data-transfer-object",
-    "description": "Data transfer objects with batteries included",
+    "description": "Data transfer objects with validation",
     "keywords": [
         "spatie",
         "larapie",
         "data-transfer-object",
         "php",
         "dto",
-        "validation"
+        "validation",
+        "annotations"
     ],
     "homepage": "https://github.com/larapie/data-transfer-object",
     "license": "MIT",
@@ -28,7 +29,6 @@
     "require": {
         "php": "^7.1",
         "doctrine/annotations": "1.*",
-        "doctrine/cache": "^1.8",
         "symfony/validator": "^4.2"
     },
     "require-dev": {

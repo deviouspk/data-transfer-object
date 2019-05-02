@@ -4,8 +4,9 @@ namespace Larapie\DataTransferObject\Tests;
 
 use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
-use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
 use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
+use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
+use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
 
 class DataTransferObjectValidationTest extends TestCase
 {
@@ -20,11 +21,27 @@ class DataTransferObjectValidationTest extends TestCase
     }
 
     /** @test */
+    public function invalid_type_throws_validator_exception()
+    {
+        $dto = new ValidateablePropertyDto([
+            'name' => 5,
+        ]);
+
+        $this->assertThrows(ValidatorException::class,
+            function () use ($dto) {
+                $dto->validate();
+            },
+            function (ValidatorException $exception) {
+                $this->assertTrue($exception->propertyViolationExists('name', InvalidPropertyTypeViolation::class));
+            });
+    }
+
+    /** @test */
     public function test_disable_validation()
     {
         $dto = new class([]) extends ValidateablePropertyDto {
         };
-        $dto->setValidation(false);
+        $dto->disableValidation();
         $this->assertEmpty($dto->toArray());
     }
 

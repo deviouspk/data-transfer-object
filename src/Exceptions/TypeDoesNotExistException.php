@@ -2,6 +2,9 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-class TypeDoesNotExistException extends \Exception
+
+use RuntimeException;
+
+class TypeDoesNotExistException extends RuntimeException
 {
 }

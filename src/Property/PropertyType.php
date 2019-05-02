@@ -17,7 +17,7 @@ class PropertyType
 
     protected $nullable = false;
 
-    protected $hasType = false;
+    protected $initialized = false;
 
     /**
      * @return array
@@ -70,22 +70,22 @@ class PropertyType
     /**
      * @return bool
      */
-    public function isHasType(): bool
+    public function isInitialized(): bool
     {
-        return $this->hasType;
+        return $this->initialized;
     }
 
     /**
-     * @param bool $hasType
+     * @param bool $initialized
      */
-    public function setHasType(bool $hasType): void
+    public function setInitialized(bool $initialized): void
     {
-        $this->hasType = $hasType;
+        $this->initialized = $initialized;
     }
 
     public function isValid($value): bool
     {
-        if (! $this->hasType) {
+        if (!$this->initialized) {
             return true;
         }
 

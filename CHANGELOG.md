@@ -2,6 +2,10 @@
 
 All notable changes to `data-transfer-object` will be documented in this file
 
+## 3.1.0 - 2019-05-01
+
+- Constraint Inheritance. Cleaned up code.
+
 ## 3.0.0 - 2019-04-23
 
 - Huge rewrite. Completed validation with symfony\validation through annotations. Improved caching.

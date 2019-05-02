@@ -2,13 +2,13 @@
 
 namespace Larapie\DataTransferObject\Factories;
 
-use ReflectionClass;
-use ReflectionProperty;
-use Larapie\DataTransferObject\Property\Property;
-use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\Contracts\AdditionalProperties;
+use Larapie\DataTransferObject\Contracts\DtoContract;
 use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
 use Larapie\DataTransferObject\Exceptions\UnknownPropertiesDtoException;
+use Larapie\DataTransferObject\Property\Property;
+use ReflectionClass;
+use ReflectionProperty;
 
 class PropertyFactory
 {
@@ -34,7 +34,7 @@ class PropertyFactory
     public function build(array $parameters)
     {
         $properties = [];
-        foreach ($this->buildPublicProperties() as $property) {
+        foreach ($this->getProperties() as $property) {
             if (array_key_exists($property->getName(), $parameters)) {
                 $property->set($parameters[$property->getName()]);
             }
@@ -56,22 +56,38 @@ class PropertyFactory
         return get_class($this->dto);
     }
 
-    protected function buildPublicProperties(): array
+    protected function buildProperties()
     {
-        if (! isset(self::$cache[$this->getDtoClass()])) {
-            $class = new ReflectionClass($this->dto);
+        $class = new ReflectionClass($this->dto);
 
-            $properties = [];
-            foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty) {
-                $property = new Property($reflectionProperty);
+        $properties = [];
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $reflectionProperty) {
+            $property = new Property($reflectionProperty);
 
-                //Set default value
-                if (($default = $reflectionProperty->getValue($this->dto)) !== null) {
-                    $property->set($reflectionProperty->getValue($this->dto));
-                }
-
-                $properties[$reflectionProperty->getName()] = $property;
+            //Set default value
+            if (($default = $reflectionProperty->getValue($this->dto)) !== null) {
+                $property->set($reflectionProperty->getValue($this->dto));
             }
+
+            //If property is immutable make sure all nested values are also immutable
+            if ($property->isImmutable())
+                $property->chainImmutable(true);
+
+            $properties[$reflectionProperty->getName()] = $property;
+        }
+        return $properties;
+    }
+
+    protected function dtoIsCached()
+    {
+        return isset(self::$cache[$this->getDtoClass()]);
+    }
+
+    protected function getProperties(): array
+    {
+        if (!$this->dtoIsCached()) {
+            $properties = $this->buildProperties();
+
             self::$cache[$this->getDtoClass()] = $properties;
 
             return $properties;

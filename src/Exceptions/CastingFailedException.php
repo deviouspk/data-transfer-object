@@ -2,10 +2,10 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use TypeError;
 use Larapie\DataTransferObject\Contracts\PropertyContract;
+use RuntimeException;
 
-class CastingFailedException extends TypeError
+class CastingFailedException extends RuntimeException
 {
     public function __construct(PropertyContract $property)
     {

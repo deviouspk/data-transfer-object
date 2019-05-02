@@ -2,11 +2,10 @@
 
 namespace Larapie\DataTransferObject\Resolvers;
 
-use ReflectionProperty;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\Reader;
+use ReflectionProperty;
 
 class AnnotationResolver
 {
@@ -39,14 +38,14 @@ class AnnotationResolver
 
     public static function setReader(Reader $reader)
     {
-        \Doctrine\Common\Annotations\AnnotationRegistry::registerUniqueLoader('class_exists');
+        AnnotationRegistry::registerUniqueLoader('class_exists');
         self::$reader = $reader;
     }
 
     protected static function getReader(): Reader
     {
         if (self::$reader === null) {
-            self::setReader(new CachedReader(new AnnotationReader(), new ArrayCache()));
+            self::setReader(new AnnotationReader());
         }
 
         return self::$reader;

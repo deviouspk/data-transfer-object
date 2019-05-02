@@ -2,9 +2,9 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use TypeError;
+use RuntimeException;
 
-class PropertyAlreadyExistsException extends TypeError
+class PropertyAlreadyExistsException extends RuntimeException
 {
     public function __construct(string $property)
     {

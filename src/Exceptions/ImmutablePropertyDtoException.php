@@ -2,9 +2,9 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use TypeError;
+use RuntimeException;
 
-class ImmutablePropertyDtoException extends TypeError
+class ImmutablePropertyDtoException extends RuntimeException
 {
     public function __construct(string $property)
     {

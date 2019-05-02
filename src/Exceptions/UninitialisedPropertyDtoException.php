@@ -2,10 +2,10 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use TypeError;
 use Larapie\DataTransferObject\Contracts\PropertyContract;
+use RuntimeException;
 
-class UninitialisedPropertyDtoException extends TypeError
+class UninitialisedPropertyDtoException extends RuntimeException
 {
     public function __construct(PropertyContract $property)
     {

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject\Property;
 
-use ReflectionProperty;
-use Symfony\Component\Validator\ValidatorBuilder;
 use Larapie\DataTransferObject\Casters\TypeCaster;
 use Larapie\DataTransferObject\DataTransferObject;
+use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
+use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
+use ReflectionProperty;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Larapie\DataTransferObject\Violations\PropertyRequiredViolation;
-use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 class Property
 {
@@ -67,14 +67,14 @@ class Property
             $values = [];
             foreach ($value as $potentialDto) {
                 if ($potentialDto instanceof DataTransferObject) {
-                    $potentialDto->setValidation(false);
+                    $potentialDto->disableValidation();
                     $values[] = $potentialDto;
                 }
             }
 
             return $values;
         } elseif ($value instanceof DataTransferObject) {
-            $value->setValidation(false);
+            $value->disableValidation();
         }
 
         return $value;
@@ -101,6 +101,8 @@ class Property
         if (! $this->isInitialized() && ! $this->data->isOptional()) {
             $violations->add(new PropertyRequiredViolation());
         }
+
+
         if (! $this->data->getType()->isValid($value)) {
             $violations->add(new InvalidPropertyTypeViolation($this->data->getType()->getTypes()));
         }
@@ -155,5 +157,19 @@ class Property
     public function setVisible(bool $visible): void
     {
         $this->visible = $visible;
+    }
+
+    public function chainImmutable($immutable)
+    {
+        $dto = $this->getValue();
+        if ($dto instanceof DataTransferObject) {
+            $dto->setImmutable($immutable);
+        } elseif (is_iterable($dto)) {
+            foreach ($dto as $aPotentialDto) {
+                if ($aPotentialDto instanceof DataTransferObject) {
+                    $aPotentialDto->setImmutable($immutable);
+                }
+            }
+        }
     }
 }

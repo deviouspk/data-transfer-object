@@ -2,15 +2,15 @@
 
 namespace Larapie\DataTransferObject\Property;
 
-use ReflectionProperty;
-use Doctrine\Common\Annotations\Reader;
-use Symfony\Component\Validator\Constraint;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Larapie\DataTransferObject\Annotations\Optional;
+use Doctrine\Common\Annotations\Reader;
 use Larapie\DataTransferObject\Annotations\Immutable;
+use Larapie\DataTransferObject\Annotations\Optional;
 use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
+use Larapie\DataTransferObject\Resolvers\ConstraintsResolver;
 use Larapie\DataTransferObject\Resolvers\PropertyTypeResolver;
+use ReflectionProperty;
 
 class PropertyData
 {
@@ -32,6 +32,9 @@ class PropertyData
     /** @var array */
     protected $constraints;
 
+    /** @var array */
+    protected $annotations;
+
     /** @var Reader */
     private static $reader;
 
@@ -48,16 +51,16 @@ class PropertyData
 
     protected function boot(reflectionProperty $reflectionProperty)
     {
-        $annotations = $this->resolveAnnotations($reflectionProperty);
+        $this->annotations = $this->resolveAnnotations($reflectionProperty);
+        $this->constraints = $this->resolveConstraints($reflectionProperty);
         $this->type = $this->resolveType($reflectionProperty);
-        $this->immutable = $this->resolveImmutable($annotations);
-        $this->constraints = $this->resolveConstraints($annotations);
-        $this->optional = $this->resolveOptional($annotations);
+        $this->immutable = $this->resolveImmutable();
+        $this->optional = $this->resolveOptional();
     }
 
     protected function resolveType(ReflectionProperty $reflection)
     {
-        return (new PropertyTypeResolver($reflection))->resolve();
+        return (new PropertyTypeResolver($reflection, $this->annotations))->resolve();
     }
 
     protected function resolveAnnotations(ReflectionProperty $reflection)
@@ -70,9 +73,9 @@ class PropertyData
         return (new AnnotationResolver($reflection))->resolve();
     }
 
-    protected function resolveOptional($annotations)
+    protected function resolveOptional()
     {
-        foreach ($annotations as $annotation) {
+        foreach ($this->annotations as $annotation) {
             if ($annotation instanceof Optional) {
                 return true;
             }
@@ -81,9 +84,9 @@ class PropertyData
         return false;
     }
 
-    protected function resolveImmutable($annotations)
+    protected function resolveImmutable()
     {
-        foreach ($annotations as $annotation) {
+        foreach ($this->annotations as $annotation) {
             if ($annotation instanceof Immutable) {
                 return true;
             }
@@ -92,16 +95,9 @@ class PropertyData
         return false;
     }
 
-    protected function resolveConstraints($annotations)
+    protected function resolveConstraints(ReflectionProperty $reflection)
     {
-        $constraints = [];
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof Constraint) {
-                $constraints[] = $annotation;
-            }
-        }
-
-        return $constraints;
+        return (new ConstraintsResolver($reflection, $this->annotations))->resolve();
     }
 
     protected static function getReader()
@@ -161,4 +157,14 @@ class PropertyData
     {
         return $this->constraints;
     }
+
+    /**
+     * @return array
+     */
+    public function getAnnotations(): array
+    {
+        return $this->annotations;
+    }
+
+
 }

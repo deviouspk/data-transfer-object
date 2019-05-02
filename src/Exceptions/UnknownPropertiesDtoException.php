@@ -2,9 +2,10 @@
 
 namespace Larapie\DataTransferObject\Exceptions;
 
-use TypeError;
 
-class UnknownPropertiesDtoException extends TypeError
+use RuntimeException;
+
+class UnknownPropertiesDtoException extends RuntimeException
 {
     public function __construct(array $properties, string $className)
     {
