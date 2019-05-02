@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Larapie\DataTransferObject\Tests;
 
 use Larapie\DataTransferObject\DataTransferObject;
-use Larapie\DataTransferObject\Tests\TestClasses\DefaultValueDto;
 use Larapie\DataTransferObject\Traits\MakeImmutable;
 use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Tests\TestClasses\DummyClass;
@@ -16,6 +15,7 @@ use Larapie\DataTransferObject\Tests\TestClasses\NestedChild;
 use Larapie\DataTransferObject\Contracts\AdditionalProperties;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParent;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
+use Larapie\DataTransferObject\Tests\TestClasses\DefaultValueDto;
 use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
 use Larapie\DataTransferObject\Exceptions\TypeDoesNotExistException;
 use Larapie\DataTransferObject\Tests\TestClasses\NestedParentOfMany;
