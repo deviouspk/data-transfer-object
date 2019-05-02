@@ -2,12 +2,12 @@
 
 namespace Larapie\DataTransferObject\Property;
 
-use Larapie\DataTransferObject\Annotations\Immutable;
+use ReflectionProperty;
 use Larapie\DataTransferObject\Annotations\Optional;
+use Larapie\DataTransferObject\Annotations\Immutable;
 use Larapie\DataTransferObject\Resolvers\AnnotationResolver;
 use Larapie\DataTransferObject\Resolvers\ConstraintsResolver;
 use Larapie\DataTransferObject\Resolvers\PropertyTypeResolver;
-use ReflectionProperty;
 
 class PropertyData
 {
@@ -144,6 +144,4 @@ class PropertyData
     {
         return $this->annotations;
     }
-
-
 }
