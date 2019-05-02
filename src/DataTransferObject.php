@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Larapie\DataTransferObject;
 
+use ReflectionException;
+use Larapie\DataTransferObject\Property\Property;
 use Larapie\DataTransferObject\Contracts\DtoContract;
-use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
+use Larapie\DataTransferObject\Factories\PropertyFactory;
+use Larapie\DataTransferObject\Exceptions\ValidatorException;
 use Larapie\DataTransferObject\Exceptions\ImmutableDtoException;
+use Larapie\DataTransferObject\Contracts\WithAdditionalProperties;
+use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
 use Larapie\DataTransferObject\Exceptions\ImmutablePropertyDtoException;
 use Larapie\DataTransferObject\Exceptions\PropertyAlreadyExistsException;
-use Larapie\DataTransferObject\Exceptions\PropertyNotFoundDtoException;
-use Larapie\DataTransferObject\Exceptions\ValidatorException;
-use Larapie\DataTransferObject\Factories\PropertyFactory;
-use Larapie\DataTransferObject\Property\Property;
-use ReflectionException;
 
 /**
  * Class DataTransferObject.
@@ -98,6 +98,7 @@ abstract class DataTransferObject implements DtoContract
                 if (array_key_exists($name, $this->with)) {
                     if ($this->isImmutable()) {
                         $value = $this->with[$name];
+
                         return clone $value;
                     }
 
