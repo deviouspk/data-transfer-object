@@ -4,10 +4,10 @@ namespace Larapie\DataTransferObject\Tests;
 
 use Larapie\DataTransferObject\Annotations\Inherit;
 use Larapie\DataTransferObject\Exceptions\ValidatorException;
-use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDtoWithOptionalProperty;
 use Larapie\DataTransferObject\Tests\TestClasses\OptionalPropertyDto;
-use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
 use Larapie\DataTransferObject\Violations\InvalidPropertyTypeViolation;
+use Larapie\DataTransferObject\Tests\TestClasses\ValidateablePropertyDto;
+use Larapie\DataTransferObject\Tests\TestClasses\ImmutableDtoWithOptionalProperty;
 
 class DataTransferObjectAnnotationsTest extends TestCase
 {
@@ -56,8 +56,7 @@ class DataTransferObjectAnnotationsTest extends TestCase
     /** @test */
     public function dto_inherits_parent_property_constraints()
     {
-        $dto = new class(['name' => 54545645]) extends ValidateablePropertyDto
-        {
+        $dto = new class(['name' => 54545645]) extends ValidateablePropertyDto {
             /** @Inherit() */
             public $name;
         };

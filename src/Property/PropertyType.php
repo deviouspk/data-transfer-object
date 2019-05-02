@@ -85,7 +85,7 @@ class PropertyType
 
     public function isValid($value): bool
     {
-        if (!$this->initialized) {
+        if (! $this->initialized) {
             return true;
         }
 
