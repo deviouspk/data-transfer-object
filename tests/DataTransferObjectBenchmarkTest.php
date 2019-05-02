@@ -12,13 +12,7 @@ class DataTransferObjectBenchmarkTest extends TestCase
         $start = microtime(true);
 
         for ($i = 0; $i < 10000; $i++) {
-            $dto = new class([
-                'name' => 'foo',
-                'child' => [
-                    'name' => 'bar',
-                ],
-            ]) extends NestedParent
-            {
+            $dto = new class(['name' => 'foo', 'child' => ['name' => 'bar']]) extends NestedParent {
             };
             $dto->validate();
         }
