@@ -28,7 +28,7 @@
     ],
     "require": {
         "php": "^7.1",
-        "doctrine/annotations": "1.*|2.*",
+        "doctrine/annotations": "^1.6|^2.0",
         "symfony/validator": "^4.2"
     },
     "require-dev": {
