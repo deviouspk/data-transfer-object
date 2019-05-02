@@ -1,7 +1,7 @@
 # Data transfer objects with batteries included
 
 [![Latest Stable Version](https://poser.pugx.org/larapie/data-transfer-object/v/stable)](https://packagist.org/packages/larapie/data-transfer-object)
-[![Build Status](https://travis-ci.com/larapie/data-transfer-object.svg?branch=master)](https://travis-ci.com/larapie/data-transfer-object)
+[![Build Status](https://travis-ci.org/larapie/data-transfer-object.svg?branch=master)](https://travis-ci.org/larapie/data-transfer-object)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/larapie/data-transfer-object/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/larapie/data-transfer-object/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/larapie/data-transfer-object/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/larapie/data-transfer-object/?branch=master)
 [![StyleCI](https://github.styleci.io/repos/177636567/shield?branch=master)](https://github.styleci.io/repos/177636567)
