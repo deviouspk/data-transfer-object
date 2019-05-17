@@ -8,7 +8,24 @@
 [![Total Downloads](https://poser.pugx.org/larapie/data-transfer-object/downloads)](https://packagist.org/packages/larapie/data-transfer-object)
 
 ## Note
-The base repo is originally developed and maintained by spatie (https://github.com/spatie/data-transfer-object). Our goal is to improve this this package with additional features.
+Even though most of the codebase has been rewritten entirely. This project was originally forked from (https://github.com/spatie/data-transfer-object). The base repository is still maintained by spatie (https://github.com/spatie). Our goal is to increase the performance (mostly through caching of the reflection properties) and improve this package with additional features (see more below).
+
+##### improvements:
+- Improved immutability.
+
+- Reflection property & annotation caching (for improved performance).
+
+- Fully qualified name resolving.
+
+- Immutable properties (through annotations).
+
+- Validation (through annotations).
+
+- Overriding & adding properties.
+
+- Optional property support.
+
+- Annotation/validation inheritence.
 
 ## Installation
 
@@ -163,6 +180,36 @@ class PostData extends DataTransferObject
 ```
 When PHP 7.4 introduces typed properties, you'll be able to simply remove the doc blocks and type the properties with the new, built-in syntax.
 
+### Immutability
+
+If you want your data object to be never changeable (this is a good idea in some cases), you can make it immutable:
+
+```php
+class PostData extends DataTransferObject
+{
+    use MakeImmutable;
+    
+    /** @var string */
+    public $name;
+}
+```
+
+
+If you only want to make a certain property immutable you can annotate this on the variable.
+
+```php
+class PostData extends DataTransferObject
+{
+    /**
+     * @Immutable
+     * @var string $name
+     */
+    public $name;
+}
+```
+
+Trying to change a property of `$postData` after it's constructed, will result in a `ImmutableDtoException`.
+
 ### Optional Properties
 
 By default all dto properties are required. If you want to make certain properties on the dto optional:
@@ -256,7 +303,7 @@ Overriding Property:
 ### Validation
 
 ##### Constraints
-If you want to validate the input of a property. You can do so with annotations through symfony constraints.
+If you want to validate the input of a property. You can do so through annotations.
 ```php
 class PostData extends DataTransferObject
 {
@@ -268,10 +315,10 @@ class PostData extends DataTransferObject
     public $name;
 }
 ```
-
-##### Constraint Inheritence
+##### Inheritence
 If you want to extend a dto and add extra constraints or the optional annotation you can do so by adding the `Inherit` annotation.
 This will merge all existing constraints from the parent class. If no type is specified on the current class it will also inherit the type of the parent dto.
+
 ```php
 class UpdatePostData extends PostData
 {
@@ -283,12 +330,13 @@ class UpdatePostData extends PostData
 }
 ```
 
-###### Notes
+##### Notes:
+- If you are using phpstorm you can install this plugin: https://plugins.jetbrains.com/plugin/7320-php-annotations to typehint the annotations.
 - The `Optional` annotation will not be inherited from the parent class. This is to ensure you always have a clear overview of what values are required in a dto.
-- Validation is done upon accessing variables through the magic __get method `$dto->property` or when outputting the values of the array through the `toArray()` or `all()` methods. You can also call the `validat()` method manually. If the dto is not valid it will throw a `ValidatorException`.
-
-To implement this functionality the excellent `symfony\validation` library was used. 
-For more info please checkout https://symfony.com/doc/current/validation.html
+- Validation is NOT done upon constructing the object. But only when accessing the variables. This can be done through the magic __get method `$dto->property` or when outputting the values of the array through the `toArray()` or `all()` methods. You could also call the `validate()` method manually. If the dto is not valid it will throw a `ValidatorException`. 
+- The `ValidatorException` message will include all the property names and the constraints that have failed on that specific property. For example: `property 'author_name' is required`.
+- To implement this functionality the excellent `symfony\validation` library was used. 
+For more info please check https://symfony.com/doc/current/validation.html .
 
 
 ### Working with collections
@@ -388,37 +436,6 @@ $postData = new PostData([
     ]
 ]);
 ```
-**Attention**: For nested type casting to work your Docblock definition needs to be a Fully Qualified Class Name (`\App\DTOs\TagData[]` instead of `TagData[]` and an use statement at the top)
-
-### Immutability
-
-If you want your data object to be never changeable (this is a good idea in some cases), you can make it immutable:
-
-```php
-class PostData extends DataTransferObject
-{
-    use MakeImmutable;
-    
-    /** @var string */
-    public $name;
-}
-```
-
-
-If you only want to make a certain property immutable you can annotate this on the variable.
-
-```php
-class PostData extends DataTransferObject
-{
-    /**
-     * @Immutable
-     * @var string $name
-     */
-    public $name;
-}
-```
-
-Trying to change a property of `$postData` after it's constructed, will result in a `ImmutableDtoException`.
 
 ### Helper functions
 
@@ -471,8 +488,8 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Credits
 
-- [Brent Roose](https://github.com/brendt)
 - [Anthony Vancauwenberghe](https://github.com/larapie)
+- [Brent Roose](https://github.com/brendt)
 - [All Contributors](../../contributors)
 
 ## License
