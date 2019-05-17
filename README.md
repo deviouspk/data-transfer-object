@@ -1,4 +1,4 @@
-# Data transfer objects with batteries included
+# Data transfer objects with validation through annotations
 
 [![Latest Stable Version](https://poser.pugx.org/larapie/data-transfer-object/v/stable)](https://packagist.org/packages/larapie/data-transfer-object)
 [![Build Status](https://travis-ci.org/larapie/data-transfer-object.svg?branch=master)](https://travis-ci.org/larapie/data-transfer-object)
