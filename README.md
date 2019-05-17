@@ -10,7 +10,7 @@
 ## Note
 Even though most of the codebase has been rewritten entirely. This project was originally forked from (https://github.com/spatie/data-transfer-object). The base repository is still maintained by spatie (https://github.com/spatie). Our goal is to increase the performance (mostly through caching of the reflection properties) and improve this package with additional features (see more below).
 
-##### improvements:
+#### Improvements:
 - Improved immutability.
 
 - Reflection property & annotation caching (for improved performance).
