@@ -25,7 +25,7 @@ Even though most of the codebase has been rewritten entirely. This project was o
 
 - Optional property support.
 
-- Annotation/validation inheritence.
+- Annotation/validation inheritance.
 
 ## Installation
 
